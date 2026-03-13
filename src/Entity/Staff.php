@@ -55,7 +55,7 @@ class Staff
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
     #[Assert\NotBlank]
     #[Assert\Positive]
-    private ?float $hourlyRate = null;
+    private ?string $hourlyRate = null;
 
     #[ORM\Column(type: 'datetime_immutable')]
     private ?\DateTimeImmutable $hireDate = null;

@@ -48,7 +48,10 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the first* access control that matches will be used
     access_control:
+        - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/customers, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/staff, roles: ROLE_ADMIN }
+        - { path: ^/api/users, roles: ROLE_ADMIN }
         - { path: ^/dashboard, roles: ROLE_USER }
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/manager, roles: ROLE_MANAGER }
