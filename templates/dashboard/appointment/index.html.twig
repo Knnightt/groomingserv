@@ -1,0 +1,118 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block dashboard_title %}Appointments{% endblock %}
+
+{% block dashboard_content %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">Appointments</h1>
+                <a href="{{ path('app_appointment_new') }}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-2"></i>New Appointment
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6 class="text-muted text-uppercase small fw-bold mb-2">Total Appointments</h6>
+                    <h3 class="mb-0">{{ appointments|length }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6 class="text-muted text-uppercase small fw-bold mb-2">Pending</h6>
+                    <h3 class="mb-0 text-warning">{{ appointments|filter(a => a.status == 'pending')|length }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6 class="text-muted text-uppercase small fw-bold mb-2">Completed</h6>
+                    <h3 class="mb-0 text-success">{{ appointments|filter(a => a.status == 'completed')|length }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6 class="text-muted text-uppercase small fw-bold mb-2">Cancelled</h6>
+                    <h3 class="mb-0 text-danger">{{ appointments|filter(a => a.status == 'cancelled')|length }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">All Appointments</h5>
+        </div>
+        <div class="card-body p-0">
+            {% if appointments|length > 0 %}
+                <div class="table-responsive">
+                    <table class="table table-hover datatable mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Date & Time</th>
+                                <th>Pet</th>
+                                <th>Service</th>
+                                <th>Staff</th>
+                                <th>Status</th>
+                                <th>Price</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appointment in appointments %}
+                                <tr>
+                                    <td>#{{ appointment.id }}</td>
+                                    <td>{{ appointment.startTime|date('M d, Y H:i') }}</td>
+                                    <td>{{ appointment.pet.name }}</td>
+                                    <td>{{ appointment.service.name }}</td>
+                                    <td>
+                                        {% if appointment.staff %}
+                                            {{ appointment.staff.name }}
+                                        {% else %}
+                                            <span class="text-muted">Unassigned</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if appointment.status == 'completed' %}
+                                            <span class="badge bg-success">Completed</span>
+                                        {% elseif appointment.status == 'pending' %}
+                                            <span class="badge bg-warning text-dark">Pending</span>
+                                        {% elseif appointment.status == 'cancelled' %}
+                                            <span class="badge bg-danger">Cancelled</span>
+                                        {% else %}
+                                            <span class="badge bg-info">{{ appointment.status|capitalize }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>${{ (appointment.price - appointment.discount + appointment.tax)|number_format(2) }}</td>
+                                    <td>
+                                        <a href="{{ path('app_appointment_show', {'id': appointment.id}) }}" class="btn btn-sm btn-outline-primary" title="View">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{{ path('app_appointment_edit', {'id': appointment.id}) }}" class="btn btn-sm btn-outline-secondary" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="card-body">
+                    <p class="text-muted text-center mb-0">No appointments found</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

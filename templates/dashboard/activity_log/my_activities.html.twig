@@ -1,0 +1,253 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}My Activities{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    {{ parent() }}
+{% endblock %}
+
+{% block dashboard_content %}  
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0">My Activities</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_activity_log_index') }}">Activity Logs</a></li>
+                <li class="breadcrumb-item active">My Activities</li>
+            </ol>
+        </nav>
+    </div>
+    <a href="{{ path('app_activity_log_index') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left me-1"></i> All Activities
+    </a>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card border-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-muted">My Total Activities</h6>
+                        <h3 class="mb-0">{{ my_activities|length }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-activity text-primary fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-muted">Today's Activities</h6>
+                        <h3 class="mb-0">{{ today_count }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-calendar-day text-success fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-muted">This Week</h6>
+                        <h3 class="mb-0">{{ week_count }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-calendar-week text-warning fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-info">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-muted">Most Common Action</h6>
+                        <h5 class="mb-0">{{ most_common_action }}</h5>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-star-fill text-info fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Activity Timeline -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Recent Activity Timeline</h5>
+    </div>
+    <div class="card-body">
+        <div class="timeline">
+            {% for activity in recent_timeline %}
+            <div class="timeline-item">
+                <div class="timeline-marker bg-{{ activity.action == 'login' ? 'success' : activity.action == 'logout' ? 'warning' : activity.action == 'create' ? 'info' : activity.action == 'delete' ? 'danger' : 'primary' }}"></div>
+                <div class="timeline-content">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <strong>{{ activity.action|capitalize }}</strong>
+                            <p class="text-muted mb-1">{{ activity.description }}</p>
+                        </div>
+                        <div class="text-end">
+                            <small class="text-muted">{{ activity.createdAt|date('H:i') }}</small><br>
+                            <small class="text-muted">{{ activity.createdAt|date('M d') }}</small>
+                        </div>
+                    </div>
+                    {% if activity.route %}
+                    <small class="text-muted">
+                        <i class="bi bi-link-45deg me-1"></i>{{ activity.route }}
+                    </small>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- My Activities Table -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">All My Activities</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="myActivitiesTable" class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Action</th>
+                        <th>Description</th>
+                        <th>IP Address</th>
+                        <th>Route</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for activity in my_activities %}
+                    <tr>
+                        <td>
+                            <strong>{{ activity.createdAt|date('Y-m-d') }}</strong><br>
+                            <small class="text-muted">{{ activity.createdAt|date('H:i:s') }}</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-{{ activity.action == 'login' ? 'success' : activity.action == 'logout' ? 'warning' : activity.action == 'create' ? 'info' : activity.action == 'delete' ? 'danger' : 'primary' }}">
+                                {{ activity.action|capitalize }}
+                            </span>
+                        </td>
+                        <td>
+                            {{ activity.description|slice(0, 60) }}{{ activity.description|length > 60 ? '...' : '' }}
+                        </td>
+                        <td>
+                            <code>{{ activity.ipAddress }}</code>
+                        </td>
+                        <td>
+                            <small class="text-muted">{{ activity.route }}</small>
+                        </td>
+                        <td>
+                            <a href="{{ path('app_activity_log_show', {'id': log.id}) }}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Activity Summary -->
+<div class="card mt-4">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Activity Summary</h5>
+    </div>
+    <div class="card-body">
+        <div class="row text-center">
+            <div class="col-md-2 mb-3">
+                <div class="display-6 text-primary">{{ action_counts.login|default(0) }}</div>
+                <small class="text-muted">Logins</small>
+            </div>
+            <div class="col-md-2 mb-3">
+                <div class="display-6 text-warning">{{ action_counts.logout|default(0) }}</div>
+                <small class="text-muted">Logouts</small>
+            </div>
+            <div class="col-md-2 mb-3">
+                <div class="display-6 text-info">{{ action_counts.create|default(0) }}</div>
+                <small class="text-muted">Creates</small>
+            </div>
+            <div class="col-md-2 mb-3">
+                <div class="display-6 text-success">{{ action_counts.update|default(0) }}</div>
+                <small class="text-muted">Updates</small>
+            </div>
+            <div class="col-md-2 mb-3">
+                <div class="display-6 text-danger">{{ action_counts.delete|default(0) }}</div>
+                <small class="text-muted">Deletes</small>
+            </div>
+            <div class="col-md-2 mb-3">
+                <div class="display-6 text-secondary">{{ action_counts.view|default(0) }}</div>
+                <small class="text-muted">Views</small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#myActivitiesTable').DataTable({
+                order: [[0, 'desc']],
+                pageLength: 25,
+                responsive: true
+            });
+        });
+    </script>
+    <style>
+        .timeline {
+            position: relative;
+            padding-left: 20px;
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .timeline-marker {
+            position: absolute;
+            left: -20px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 0 0 2px currentColor;
+        }
+        .timeline-content {
+            padding-left: 10px;
+            border-left: 2px solid #e9ecef;
+            padding-bottom: 10px;
+        }
+        .timeline-item:last-child .timeline-content {
+            border-left: 2px solid transparent;
+        }
+    </style>
+{% endblock %}

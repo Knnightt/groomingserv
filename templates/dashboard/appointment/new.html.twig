@@ -1,0 +1,137 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block dashboard_title %}New Appointment{% endblock %}
+
+{% block dashboard_content %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">Create New Appointment</h1>
+                <a href="{{ path('app_appointment_index') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>Back to Appointments
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Appointment Details</h5>
+                </div>
+                <div class="card-body">
+                    {{ form_start(form, {'attr': {'class': 'needs-validation'}}) }}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form_label(form.pet) }}
+                                    {{ form_widget(form.pet, {'attr': {'class': 'form-select'}}) }}
+                                    {{ form_errors(form.pet) }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form_label(form.service) }}
+                                    {{ form_widget(form.service, {'attr': {'class': 'form-select'}}) }}
+                                    {{ form_errors(form.service) }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form_label(form.startTime) }}
+                                    {{ form_widget(form.startTime, {'attr': {'class': 'form-control', 'type': 'datetime-local'}}) }}
+                                    {{ form_errors(form.startTime) }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form_label(form.endTime) }}
+                                    {{ form_widget(form.endTime, {'attr': {'class': 'form-control', 'type': 'datetime-local'}}) }}
+                                    {{ form_errors(form.endTime) }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form_label(form.staff) }}
+                                    {{ form_widget(form.staff, {'attr': {'class': 'form-select'}}) }}
+                                    {{ form_errors(form.staff) }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form_label(form.status) }}
+                                    {{ form_widget(form.status, {'attr': {'class': 'form-select'}}) }}
+                                    {{ form_errors(form.status) }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form_label(form.price) }}
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        {{ form_widget(form.price, {'attr': {'class': 'form-control', 'step': '0.01'}}) }}
+                                    </div>
+                                    {{ form_errors(form.price) }}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form_label(form.discount) }}
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        {{ form_widget(form.discount, {'attr': {'class': 'form-control', 'step': '0.01'}}) }}
+                                    </div>
+                                    {{ form_errors(form.discount) }}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form_label(form.tax) }}
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        {{ form_widget(form.tax, {'attr': {'class': 'form-control', 'step': '0.01'}}) }}
+                                    </div>
+                                    {{ form_errors(form.tax) }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(form.notes) }}
+                            {{ form_widget(form.notes, {'attr': {'class': 'form-control', 'rows': '4', 'placeholder': 'Additional notes for this appointment'}}) }}
+                            {{ form_errors(form.notes) }}
+                        </div>
+
+                        <div class="d-grid gap-2 d-sm-flex">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save me-2"></i>Create Appointment
+                            </button>
+                            <a href="{{ path('app_appointment_index') }}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Info</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small">Fill in all the required fields to create a new appointment. Make sure to select a pet, service, and staff member.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

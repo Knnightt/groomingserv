@@ -1,0 +1,59 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block dashboard_title %}User Profiles{% endblock %}
+
+{% block dashboard_content %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">User Profiles</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">User Profiles</h5>
+        </div>
+        <div class="card-body p-0">
+            {% if userProfiles|length > 0 %}
+                <div class="table-responsive">
+                    <table class="table table-hover datatable mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>User</th>
+                                <th>Name</th>
+                                <th>Phone</th>
+                                <th>Address</th>
+                                <th>City</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for profile in userProfiles %}
+                                <tr>
+                                    <td>#{{ profile.id }}</td>
+                                    <td>{{ profile.user.email }}</td>
+                                    <td>{{ profile.firstName }} {{ profile.lastName }}</td>
+                                    <td>{{ profile.phone or 'N/A' }}</td>
+                                    <td>{{ profile.address or 'N/A' }}</td>
+                                    <td>{{ profile.city or 'N/A' }}</td>
+                                    <td>
+                                        <a href="{{ path('app_user_management_show', {'id': profile.user.id}) }}" class="btn btn-sm btn-outline-primary" title="View">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="card-body">
+                    <p class="text-muted text-center mb-0">No user profiles found</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

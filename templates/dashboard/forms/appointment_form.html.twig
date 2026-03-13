@@ -1,0 +1,209 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% from 'dashboard/components/form_layout.html.twig' import form_header, form_actions %}
+
+{% block title %}{{ appointment.id ? 'Edit' : 'New' }} Appointment - Dashboard{% endblock %}
+
+{% block dashboard_content %}  
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                {{ form_header(
+                    (appointment.id ? 'Edit Appointment' : 'Schedule New Appointment'),
+                    (appointment.id ? 'Update appointment details' : 'Book a new grooming appointment')
+                ) }}
+                
+                <div class="card-body">
+                    {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form_row(form.startAt) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.endAt) }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            {{ form_row(form.service) }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form_row(form.pet) }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form_row(form.assignedStaff) }}
+                        </div>
+                    </div>
+                    
+                    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') or is_granted('ROLE_STAFF') %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form_row(form.customer) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.status) }}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            {{ form_row(form.amount) }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form_row(form.discount) }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form_row(form.tax) }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form_row(form.paymentMethod) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.isPaid) }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form_row(form.notes) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.groomerNotes) }}
+                        </div>
+                    </div>
+                    
+                    {{ form_actions(
+                        'app_scheduling_delete',
+                        appointment.id,
+                        appointment.id and (is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER'))
+                    ) }}
+                    
+                    {{ form_end(form) }}
+                </div>
+            </div>
+            
+            {% if appointment.id %}
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">Appointment Summary</h5>
+                        </div>
+                        <div class="card-body">
+                            <dl class="row mb-0">
+                                <dt class="col-sm-4">Duration:</dt>
+                                <dd class="col-sm-8">{{ appointment.duration }} minutes</dd>
+                                
+                                <dt class="col-sm-4">Total Amount:</dt>
+                                <dd class="col-sm-8">${{ appointment.totalAmount|number_format(2) }}</dd>
+                                
+                                <dt class="col-sm-4">Created:</dt>
+                                <dd class="col-sm-8">{{ appointment.createdAt|date('M d, Y h:i A') }}</dd>
+                                
+                                <dt class="col-sm-4">Last Updated:</dt>
+                                <dd class="col-sm-8">
+                                    {% if appointment.updatedAt %}
+                                        {{ appointment.updatedAt|date('M d, Y h:i A') }}
+                                    {% else %}
+                                        Never
+                                    {% endif %}
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">Quick Actions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                {% if appointment.status == 'Pending' or appointment.status == 'Confirmed' %}
+                                    <form method="post" action="{{ path('app_scheduling_complete', {'id': appointment.id}) }}">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('complete' ~ appointment.id) }}">
+                                        <button type="submit" class="btn btn-success w-100">
+                                            <i class="bi bi-check-circle me-1"></i>Mark as Completed
+                                        </button>
+                                    </form>
+                                    
+                                    <form method="post" action="{{ path('app_scheduling_cancel', {'id': appointment.id}) }}">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('cancel' ~ appointment.id) }}">
+                                        <button type="submit" class="btn btn-warning w-100">
+                                            <i class="bi bi-x-circle me-1"></i>Cancel Appointment
+                                        </button>
+                                    </form>
+                                {% endif %}
+                                
+                                <a href="{{ path('app_scheduling_show', {'id': appointment.id}) }}" class="btn btn-outline-primary">
+                                    <i class="bi bi-eye me-1"></i>View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize datetime pickers
+    const datetimePickers = document.querySelectorAll('.datetimepicker');
+    datetimePickers.forEach(picker => {
+        // You would initialize a datetime picker library here
+        // Example with Flatpickr:
+        // flatpickr(picker, {
+        //     enableTime: true,
+        //     dateFormat: "Y-m-d H:i",
+        // });
+    });
+    
+    // Calculate end time based on service duration
+    const serviceSelect = document.querySelector('select[name="appointment_form[service]"]');
+    const startAtInput = document.querySelector('input[name="appointment_form[startAt]"]');
+    const endAtInput = document.querySelector('input[name="appointment_form[endAt]"]');
+    
+    if (serviceSelect && startAtInput && endAtInput) {
+        // Store service durations in a data attribute or fetch via AJAX
+        const serviceDurations = {
+            // This would be populated with actual service data
+            // '1': 60, // Service ID: duration in minutes
+            // '2': 90,
+        };
+        
+        serviceSelect.addEventListener('change', function() {
+            const serviceId = this.value;
+            const duration = serviceDurations[serviceId] || 60;
+            
+            if (startAtInput.value) {
+                const startTime = new Date(startAtInput.value);
+                const endTime = new Date(startTime.getTime() + duration * 60000);
+                
+                // Format end time for datetime input
+                const formattedEndTime = endTime.toISOString().slice(0, 16);
+                endAtInput.value = formattedEndTime;
+            }
+        });
+        
+        startAtInput.addEventListener('change', function() {
+            if (serviceSelect.value) {
+                serviceSelect.dispatchEvent(new Event('change'));
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

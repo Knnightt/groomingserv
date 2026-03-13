@@ -1,0 +1,126 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Profile Settings{% endblock %}
+
+{% block dashboard_content %}  
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0">Profile Settings</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_settings_index') }}">Settings</a></li>
+                <li class="breadcrumb-item active">Profile</li>
+            </ol>
+        </nav>
+    </div>
+    <a href="{{ path('app_settings_index') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Back to Settings
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Edit Profile Information</h5>
+            </div>
+            <div class="card-body">
+                {{ form_start(form) }}
+                <div class="row">
+                    <!-- Profile Photo -->
+                    <div class="col-12 text-center mb-4">
+                        {% if app.user.userProfile and app.user.userProfile.photo %}
+                            <img src="{{ app.user.userProfile.photo }}" alt="Current Photo" class="rounded-circle mb-3" id="profilePreview" style="width: 150px; height: 150px; object-fit: cover;">
+                        {% else %}
+                            <div class="avatar-xl bg-secondary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" id="profilePreview">
+                                <i class="bi bi-person text-white" style="font-size: 4rem;"></i>
+                            </div>
+                        {% endif %}
+                        <div class="mb-3">
+                            {{ form_label(form.photo) }}
+                            {{ form_widget(form.photo, {'attr': {'class': 'form-control', 'onchange': 'previewImage(this)'}}) }}
+                            <div class="form-text">Enter image URL or upload image</div>
+                        </div>
+                    </div>
+
+                    <!-- Personal Information -->
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.fullName) }}
+                        {{ form_widget(form.fullName, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.phoneNumber) }}
+                        {{ form_widget(form.phoneNumber, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.dateOfBirth) }}
+                        {{ form_widget(form.dateOfBirth, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.gender) }}
+                        {{ form_widget(form.gender, {'attr': {'class': 'form-select'}}) }}
+                    </div>
+
+                    <!-- Address -->
+                    <div class="col-12 mb-3">
+                        {{ form_label(form.address) }}
+                        {{ form_widget(form.address, {'attr': {'class': 'form-control', 'rows': 2}}) }}
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        {{ form_label(form.city) }}
+                        {{ form_widget(form.city, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        {{ form_label(form.state) }}
+                        {{ form_widget(form.state, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        {{ form_label(form.zipCode) }}
+                        {{ form_widget(form.zipCode, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.country) }}
+                        {{ form_widget(form.country, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+
+                    <!-- Bio -->
+                    <div class="col-12 mb-3">
+                        {{ form_label(form.bio) }}
+                        {{ form_widget(form.bio, {'attr': {'class': 'form-control', 'rows': 4}}) }}
+                        <div class="form-text">Tell us a little about yourself</div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <a href="{{ path('app_settings_index') }}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-1"></i> Save Changes
+                    </button>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profilePreview').innerHTML = 
+                        '<img src="' + e.target.result + '" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">';
+                };
+                reader.readAsDataURL(input.files[0]);
+            } else if (input.value) {
+                // If it's a URL input
+                document.getElementById('profilePreview').innerHTML = 
+                    '<img src="' + input.value + '" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">';
+            }
+        }
+    </script>
+{% endblock %}

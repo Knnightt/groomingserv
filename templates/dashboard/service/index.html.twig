@@ -1,0 +1,193 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Service Management{% endblock %}
+
+{% block stylesheets %}  
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    {{ parent() }}
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Service Management</h1>
+    <a href="{{ path('app_service_new') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i> Add New Service
+    </a>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card border-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-muted">Total Services</h6>
+                        <h3 class="mb-0">{{ services|length }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-scissors text-primary fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-muted">Active Services</h6>
+                        <h3 class="mb-0">{{ active_services }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-check-circle-fill text-success fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-info">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-muted">Premium Services</h6>
+                        <h3 class="mb-0">{{ premium_services }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-star-fill text-info fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-muted">Most Popular</h6>
+                        <h5 class="mb-0">{{ popular_service }}</h5>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-fire text-warning fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Services Table -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">All Services</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="servicesTable" class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Duration</th>
+                        <th>Status</th>
+                        <th>Appointments</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for service in services %}
+                    <tr>
+                        <td>{{ service.id }}</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                {% if service.image %}
+                                <img src="{{ service.image }}" alt="{{ service.name }}" class="rounded me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                {% else %}
+                                <div class="avatar-sm bg-light rounded d-flex align-items-center justify-content-center me-2">
+                                    <i class="bi bi-scissors text-muted"></i>
+                                </div>
+                                {% endif %}
+                                <div>
+                                    <strong>{{ service.name }}</strong>
+                                    <div class="small text-muted">{{ service.description|slice(0, 50) }}...</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-{{ service.category == 'Premium' ? 'warning' : service.category == 'Ultimate' ? 'danger' : 'info' }}">
+                                {{ service.category }}
+                            </span>
+                        </td>
+                        <td>${{ service.price|number_format(2) }}</td>
+                        <td>{{ service.duration }} min</td>
+                        <td>
+                            {% if service.isActive %}
+                                <span class="badge bg-success">Active</span>
+                            {% else %}
+                                <span class="badge bg-danger">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ service.appointments|length }}</td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="{{ path('app_service_show', {'id': service.id}) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{{ path('app_service_edit', {'id': service.id}) }}" class="btn btn-sm btn-outline-warning">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ service.id }}">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                            
+                            <!-- Delete Modal -->
+                            <div class="modal fade" id="deleteModal{{ service.id }}" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Confirm Delete</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you want to delete service <strong>"{{ service.name }}"</strong>? This will affect all related appointments.
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <form action="{{ path('app_service_delete', {'id': service.id}) }}" method="post" class="d-inline">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ service.id) }}">
+                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#servicesTable').DataTable({
+                order: [[0, 'desc']],
+                pageLength: 25,
+                responsive: true
+            });
+        });
+    </script>
+{% endblock %}

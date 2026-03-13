@@ -1,0 +1,137 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Add New Pet{% endblock %}
+
+{% block dashboard_content %}  
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0">Add New Pet</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_pet_index') }}">Pets</a></li>
+                <li class="breadcrumb-item active">New Pet</li>
+            </ol>
+        </nav>
+    </div>
+    <a href="{{ path('app_pet_index') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Back to List
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Pet Information</h5>
+            </div>
+            <div class="card-body">
+                {{ form_start(form) }}
+                <div class="row">
+                <!-- Basic Information -->
+                <div class="col-md-6 mb-3">
+                    {{ form_label(form.name) }}
+                    {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Owner</label>
+                    <input type="text" class="form-control" value="{{ app.user.fullName|default(app.user.email) }}" disabled readonly>
+                    <div class="form-text">Pet will be registered to your account</div>
+                </div>
+            </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        {{ form_label(form.species) }}
+                        {{ form_widget(form.species, {'attr': {'class': 'form-select'}}) }}
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        {{ form_label(form.breed) }}
+                        {{ form_widget(form.breed, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        {{ form_label(form.gender) }}
+                        {{ form_widget(form.gender, {'attr': {'class': 'form-select'}}) }}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        {{ form_label(form.age) }}
+                        <div class="input-group">
+                            {{ form_widget(form.age, {'attr': {'class': 'form-control'}}) }}
+                            <span class="input-group-text">years</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        {{ form_label(form.weight) }}
+                        <div class="input-group">
+                            {{ form_widget(form.weight, {'attr': {'class': 'form-control'}}) }}
+                            <span class="input-group-text">kg</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        {{ form_label(form.lifeStage) }}
+                        {{ form_widget(form.lifeStage, {'attr': {'class': 'form-select'}}) }}
+                    </div>
+                </div>
+
+                <!-- Health Information -->
+                <div class="row">
+                    <div class="col-12">
+                        <h6 class="border-bottom pb-2 mb-3">Health Information</h6>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="form-check form-switch">
+                            {{ form_widget(form.isVaccinated, {'attr': {'class': 'form-check-input'}}) }}
+                            {{ form_label(form.isVaccinated, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="form-check form-switch">
+                            {{ form_widget(form.isNeutered, {'attr': {'class': 'form-check-input'}}) }}
+                            {{ form_label(form.isNeutered, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.coatType) }}
+                        {{ form_widget(form.coatType, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.temperament) }}
+                        {{ form_widget(form.temperament, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    {{ form_label(form.medicalNotes) }}
+                    {{ form_widget(form.medicalNotes, {'attr': {'class': 'form-control', 'rows': 3}}) }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form_label(form.allergies) }}
+                    {{ form_widget(form.allergies, {'attr': {'class': 'form-control', 'rows': 2}}) }}
+                </div>
+
+                <!-- Photo -->
+                <div class="mb-3">
+                    {{ form_label(form.photo) }}
+                    {{ form_widget(form.photo, {'attr': {'class': 'form-control'}}) }}
+                    <div class="form-text">Enter image URL or upload later</div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <button type="reset" class="btn btn-secondary">Reset</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-1"></i> Add Pet
+                    </button>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

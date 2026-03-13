@@ -1,0 +1,186 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Activity Log Details - #{{ activity_log.id }}{% endblock %}
+
+{% block dashboard_content %}  
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0">Activity Log Details</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_activity_log_index') }}">Activity Logs</a></li>
+                {# <li class="breadcrumb-item active">#{{ activity_log.id }}</li> #}
+            </ol>
+        </nav>
+    </div>
+    <div>
+        <a href="{{ path('app_activity_log_index') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to List
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Log Details -->
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Activity Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>Log ID:</strong><br>
+                        <span class="text-muted">#{{ activity_log.id }}</span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Action:</strong><br>
+                        <span class="badge bg-{{ activity_log.action == 'login' ? 'success' : activity_log.action == 'logout' ? 'warning' : activity_log.action == 'create' ? 'info' : activity_log.action == 'delete' ? 'danger' : 'primary' }}">
+                            {{ activity_log.action|capitalize }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>Timestamp:</strong><br>
+                        <span class="text-muted">{{ activity_log.createdAt|date('F j, Y H:i:s') }}</span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Route:</strong><br>
+                        <span class="text-muted">{{ activity_log.route }}</span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <strong>Description:</strong><br>
+                    <p class="text-muted">{{ activity_log.description ?? 'No description provided' }}</p>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>IP Address:</strong><br>
+                        <code>{{ activity_log.ipAddress }}</code>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>User Agent:</strong><br>
+                        <span class="text-muted">{{ activity_log.userAgent }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Related Data -->
+        {% if related_data %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Related Data</h5>
+            </div>
+            <div class="card-body">
+                <pre class="bg-light p-3 rounded" style="max-height: 300px; overflow-y: auto;"><code>{{ related_data|json_encode(constant('JSON_PRETTY_PRINT')) }}</code></pre>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- User Information -->
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="card-title mb-0">User Information</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    {% if activity_log.user.userProfile and activity_log.user.userProfile.photo %}
+                        <img src="{{ activity_log.user.userProfile.photo }}" alt="{{ activity_log.user.username }}" class="rounded-circle me-3" style="width: 80px; height: 80px;">
+                    {% else %}
+                        <div class="avatar bg-secondary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 80px; height: 80px;">
+                            <i class="bi bi-person text-white" style="font-size: 2.5rem;"></i>
+                        </div>
+                    {% endif %}
+                    <div>
+                        <h5 class="mb-0">{{ activity_log.user.displayName }}</h5>
+                        <p class="text-muted mb-0">{{ activity_log.user.email }}</p>
+                        <small class="text-muted">{{ activity_log.user.roles|first|replace({'ROLE_': ''}) }}</small>
+                    </div>
+                </div>
+                
+                <table class="table table-sm table-borderless">
+                    <tr>
+                        <td width="40%">User ID:</td>
+                        <td>{{ activity_log.user.id }}</td>
+                    </tr>
+                    <tr>
+                        <td>Username:</td>
+                        <td>{{ activity_log.user.username }}</td>
+                    </tr>
+                    <tr>
+                        <td>Account Status:</td>
+                        <td>
+                            {% if activity_log.user.isActive %}
+                                <span class="badge bg-success">Active</span>
+                            {% else %}
+                                <span class="badge bg-danger">Inactive</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Verified:</td>
+                        <td>
+                            {% if activity_log.user.isVerified %}
+                                <span class="badge bg-success">Yes</span>
+                            {% else %}
+                                <span class="badge bg-warning">No</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+                
+                <div class="d-grid gap-2">
+                    <a href="{{ path('app_activity_log_show', {'id': log.id}) }}" class="btn btn-outline-primary">
+                        <i class="bi bi-person me-2"></i> View User Profile
+                    </a>
+                    <a href="{{ path('app_activity_log_index', {'user_id': activity_log.user.id}) }}" class="btn btn-outline-info">
+                        <i class="bi bi-activity me-2"></i> View All Activities
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Similar Activities -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">Recent Activities by This User</h6>
+            </div>
+            <div class="card-body">
+                {% if recent_activities|length > 0 %}
+                    <div class="list-group list-group-flush">
+                        {% for recent in recent_activities %}
+                        <a href="{{ path('app_activity_log_show', {'id': recent.id}) }}" class="list-group-item list-group-item-action">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ recent.action|capitalize }}</strong><br>
+                                    <small class="text-muted">{{ recent.description|slice(0, 30) }}{{ recent.description|length > 30 ? '...' : '' }}</small>
+                                </div>
+                                <div class="text-end">
+                                    <small>{{ recent.createdAt|date('H:i') }}</small><br>
+                                    <span class="badge bg-{{ recent.action == 'login' ? 'success' : recent.action == 'logout' ? 'warning' : recent.action == 'create' ? 'info' : recent.action == 'delete' ? 'danger' : 'primary' }}">
+                                        {{ recent.action|slice(0, 1)|upper }}
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-3">
+                        <i class="bi bi-activity text-muted"></i>
+                        <p class="text-muted mt-2 mb-0">No recent activities</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

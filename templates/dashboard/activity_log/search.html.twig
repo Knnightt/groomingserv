@@ -1,0 +1,394 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Advanced Search - Activity Logs{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    {{ parent() }}
+{% endblock %}
+
+{% block dashboard_content %}  
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0">Advanced Search</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_activity_log_index') }}">Activity Logs</a></li>
+                <li class="breadcrumb-item active">Advanced Search</li>
+            </ol>
+        </nav>
+    </div>
+    <a href="{{ path('app_activity_log_index') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Back to List
+    </a>
+</div>
+
+<!-- Search Form -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Search Criteria</h5>
+    </div>
+    <div class="card-body">
+        <form method="get" action="{{ path('app_dashboard_activitylog_search') }}" id="searchForm">
+            <div class="row g-3">
+                <!-- Date Range -->
+                <div class="col-md-6">
+                    <label class="form-label">Date Range</label>
+                    <div class="input-group">
+                        <input type="date" class="form-control" name="start_date" value="{{ start_date }}">
+                        <span class="input-group-text">to</span>
+                        <input type="date" class="form-control" name="end_date" value="{{ end_date }}">
+                    </div>
+                </div>
+
+                <!-- Time Range -->
+                <div class="col-md-6">
+                    <label class="form-label">Time Range</label>
+                    <div class="input-group">
+                        <input type="time" class="form-control" name="start_time" value="{{ start_time }}">
+                        <span class="input-group-text">to</span>
+                        <input type="time" class="form-control" name="end_time" value="{{ end_time }}">
+                    </div>
+                </div>
+
+                <!-- User Selection -->
+                <div class="col-md-4">
+                    <label class="form-label">User</label>
+                    <select class="form-select" name="user_id">
+                        <option value="">All Users</option>
+                        {% for user in users %}
+                            <option value="{{ user.id }}" {{ user_id == user.id ? 'selected' : '' }}>{{ user.displayName }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Action Type -->
+                <div class="col-md-4">
+                    <label class="form-label">Action Type</label>
+                    <select class="form-select" name="action_type">
+                        <option value="">All Actions</option>
+                        <option value="login" {{ action_type == 'login' ? 'selected' : '' }}>Login</option>
+                        <option value="logout" {{ action_type == 'logout' ? 'selected' : '' }}>Logout</option>
+                        <option value="create" {{ action_type == 'create' ? 'selected' : '' }}>Create</option>
+                        <option value="update" {{ action_type == 'update' ? 'selected' : '' }}>Update</option>
+                        <option value="delete" {{ action_type == 'delete' ? 'selected' : '' }}>Delete</option>
+                        <option value="view" {{ action_type == 'view' ? 'selected' : '' }}>View</option>
+                        <option value="export" {{ action_type == 'export' ? 'selected' : '' }}>Export</option>
+                        <option value="import" {{ action_type == 'import' ? 'selected' : '' }}>Import</option>
+                        <option value="approve" {{ action_type == 'approve' ? 'selected' : '' }}>Approve</option>
+                        <option value="reject" {{ action_type == 'reject' ? 'selected' : '' }}>Reject</option>
+                    </select>
+                </div>
+
+                <!-- IP Address -->
+                <div class="col-md-4">
+                    <label class="form-label">IP Address</label>
+                    <input type="text" class="form-control" name="ip_address" value="{{ ip_address }}" placeholder="e.g., 192.168.1.1">
+                </div>
+
+                <!-- Description Search -->
+                <div class="col-md-12">
+                    <label class="form-label">Description Contains</label>
+                    <input type="text" class="form-control" name="description" value="{{ description }}" placeholder="Search in description">
+                </div>
+
+                <!-- Route Search -->
+                <div class="col-md-6">
+                    <label class="form-label">Route Contains</label>
+                    <input type="text" class="form-control" name="route" value="{{ route }}" placeholder="Search in route">
+                </div>
+
+                <!-- User Agent -->
+                <div class="col-md-6">
+                    <label class="form-label">User Agent Contains</label>
+                    <input type="text" class="form-control" name="user_agent" value="{{ user_agent }}" placeholder="Search in user agent">
+                </div>
+
+                <!-- Sort Options -->
+                <div class="col-md-4">
+                    <label class="form-label">Sort By</label>
+                    <select class="form-select" name="sort_by">
+                        <option value="created_at" {{ sort_by == 'created_at' ? 'selected' : '' }}>Date & Time</option>
+                        <option value="user" {{ sort_by == 'user' ? 'selected' : '' }}>User</option>
+                        <option value="action" {{ sort_by == 'action' ? 'selected' : '' }}>Action</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Sort Order</label>
+                    <select class="form-select" name="sort_order">
+                        <option value="desc" {{ sort_order == 'desc' ? 'selected' : '' }}>Descending</option>
+                        <option value="asc" {{ sort_order == 'asc' ? 'selected' : '' }}>Ascending</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Results Per Page</label>
+                    <select class="form-select" name="per_page">
+                        <option value="25" {{ per_page == 25 ? 'selected' : '' }}>25</option>
+                        <option value="50" {{ per_page == 50 ? 'selected' : '' }}>50</option>
+                        <option value="100" {{ per_page == 100 ? 'selected' : '' }}>100</option>
+                        <option value="250" {{ per_page == 250 ? 'selected' : '' }}>250</option>
+                    </select>
+                </div>
+
+                <!-- Search Buttons -->
+                <div class="col-12">
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset Form</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-search me-1"></i> Search
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Search Results -->
+{% if search_performed %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">Search Results ({{ results|length }} found)</h5>
+        {% if results|length > 0 %}
+        <button class="btn btn-outline-success btn-sm" onclick="exportSearchResults()">
+            <i class="bi bi-download me-1"></i> Export Results
+        </button>
+        {% endif %}
+    </div>
+    <div class="card-body">
+        {% if results|length > 0 %}
+            <div class="table-responsive">
+                <table id="searchResultsTable" class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>User</th>
+                            <th>Action</th>
+                            <th>Description</th>
+                            <th>IP Address</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for result in results %}
+                        <tr>
+                            <td>
+                                <strong>{{ result.createdAt|date('Y-m-d') }}</strong><br>
+                                <small class="text-muted">{{ result.createdAt|date('H:i:s') }}</small>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-sm me-2">
+                                        {% if result.user.userProfile and result.user.userProfile.photo %}
+                                            <img src="{{ result.user.userProfile.photo }}" alt="{{ result.user.username }}" class="rounded-circle" style="width: 32px; height: 32px;">
+                                        {% else %}
+                                            <div class="avatar-sm bg-secondary rounded-circle d-flex align-items-center justify-content-center">
+                                                <i class="bi bi-person text-white"></i>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        {{ result.user.displayName }}<br>
+                                        <small class="text-muted">{{ result.user.email }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-{{ result.action == 'login' ? 'success' : result.action == 'logout' ? 'warning' : result.action == 'create' ? 'info' : result.action == 'delete' ? 'danger' : 'primary' }}">
+                                    {{ result.action|capitalize }}
+                                </span>
+                            </td>
+                            <td>
+                                {{ result.description|slice(0, 50) }}{{ result.description|length > 50 ? '...' : '' }}
+                            </td>
+                            <td>
+                                <code>{{ result.ipAddress }}</code>
+                            </td>
+                            <td>
+                                <a href="{{ path('app_activity_log_show', {'id': log.id}) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-search text-muted" style="font-size: 3rem;"></i>
+                <h4 class="text-muted mt-3">No results found</h4>
+                <p class="text-muted">Try adjusting your search criteria</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Search Summary -->
+{% if results|length > 0 %}
+<div class="card mt-4">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Search Summary</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h6>Search Criteria:</h6>
+                <ul class="list-unstyled">
+                    {% if start_date %}<li><strong>From:</strong> {{ start_date }} {{ start_time ? start_time : '' }}</li>{% endif %}
+                    {% if end_date %}<li><strong>To:</strong> {{ end_date }} {{ end_time ? end_time : '' }}</li>{% endif %}
+                    {% if user_id %}<li><strong>User:</strong> {{ selected_user.displayName }}</li>{% endif %}
+                    {% if action_type %}<li><strong>Action:</strong> {{ action_type|capitalize }}</li>{% endif %}
+                    {% if ip_address %}<li><strong>IP Address:</strong> {{ ip_address }}</li>{% endif %}
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h6>Results Analysis:</h6>
+                <div class="row">
+                    {% for action, count in result_summary %}
+                    <div class="col-4 mb-2">
+                        <div class="text-center">
+                            <div class="display-6 text-{{ action == 'login' ? 'success' : action == 'logout' ? 'warning' : action == 'create' ? 'info' : action == 'delete' ? 'danger' : 'primary' }}">
+                                {{ count }}
+                            </div>
+                            <small class="text-muted">{{ action|capitalize }}</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endif %}
+
+<!-- Saved Searches -->
+<div class="card mt-4">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Saved Searches</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="searchName" placeholder="Name this search">
+                    <button class="btn btn-outline-primary" type="button" onclick="saveSearch()">
+                        <i class="bi bi-save me-1"></i> Save Search
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                {% if saved_searches|length > 0 %}
+                    <div class="list-group">
+                        {% for saved in saved_searches %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ saved.name }}</strong><br>
+                                <small class="text-muted">Saved on {{ saved.createdAt|date('Y-m-d') }}</small>
+                            </div>
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-outline-primary" onclick="loadSearch('{{ saved.id }}')">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteSearch('{{ saved.id }}')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-3">
+                        <i class="bi bi-bookmark text-muted"></i>
+                        <p class="text-muted mt-2 mb-0">No saved searches</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        {% if search_performed and results|length > 0 %}
+        $(document).ready(function() {
+            $('#searchResultsTable').DataTable({
+                order: [[0, 'desc']],
+                pageLength: {{ per_page }},
+                responsive: true
+            });
+        });
+        {% endif %}
+        
+        function resetForm() {
+            document.getElementById('searchForm').reset();
+            window.location.href = '{{ path('app_dashboard_activitylog_search') }}';
+        }
+        
+        function saveSearch() {
+            const name = document.getElementById('searchName').value;
+            if (!name) {
+                alert('Please enter a name for this search');
+                return;
+            }
+            
+            const form = document.getElementById('searchForm');
+            const formData = new FormData(form);
+            formData.append('name', name);
+            
+            fetch('/dashboard/activity-log/save-search', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-Token': '{{ csrf_token("save_search") }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Search saved successfully!');
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            });
+        }
+        
+        function loadSearch(searchId) {
+            window.location.href = '/dashboard/activity-log/load-search/' + searchId;
+        }
+        
+        function deleteSearch(searchId) {
+            if (confirm('Delete this saved search?')) {
+                fetch('/dashboard/activity-log/delete-search/' + searchId, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-Token': '{{ csrf_token("delete_search") }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    }
+                });
+            }
+        }
+        
+        function exportSearchResults() {
+            const form = document.getElementById('searchForm');
+            const formData = new FormData(form);
+            const params = new URLSearchParams(formData);
+            
+            window.open('/dashboard/activity-log/export-search?' + params.toString(), '_blank');
+        }
+    </script>
+{% endblock %}

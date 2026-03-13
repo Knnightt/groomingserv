@@ -1,0 +1,212 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Staff Management{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    {{ parent() }}
+{% endblock %}
+
+{% block dashboard_content %}  
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Staff Management</h1>
+    <a href="{{ path('app_staff_management_new') }}" class="btn btn-primary">
+        <i class="bi bi-person-plus me-1"></i> Add New Staff
+    </a>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card border-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-muted">Total Staff</h6>
+                        <h3 class="mb-0">{{ staff_members|length }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-people-fill text-primary fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-muted">Active Staff</h6>
+                        <h3 class="mb-0">{{ active_staff }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-person-check-fill text-success fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-info">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-muted">Groomers</h6>
+                        <h3 class="mb-0">{{ groomer_count }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-scissors text-info fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-muted">Avg Experience</h6>
+                        <h3 class="mb-0">{{ avg_experience }} years</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-award text-warning fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Staff Table -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">All Staff Members</h5>
+        <div class="btn-group">
+            <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                <i class="bi bi-filter me-1"></i> Filter by Role
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="?role=groomer">Groomers</a></li>
+                <li><a class="dropdown-item" href="?role=receptionist">Receptionists</a></li>
+                <li><a class="dropdown-item" href="?role=manager">Managers</a></li>
+                <li><a class="dropdown-item" href="?role=veterinarian">Veterinarians</a></li>
+                <li><a class="dropdown-item" href="?">Show All</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="staffTable" class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Photo</th>
+                        <th>Name</th>
+                        <th>Role</th>
+                        <th>Experience</th>
+                        <th>Hourly Rate</th>
+                        <th>Status</th>
+                        <th>Appointments</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for staff in staff_members %}
+                    <tr>
+                        <td>{{ staff.id }}</td>
+                        <td>
+                            {% if staff.photo %}
+                                <img src="{{ staff.photo }}" alt="{{ staff.displayName }}" class="rounded" style="width: 50px; height: 50px; object-fit: cover;">
+                            {% else %}
+                                <div class="avatar-sm bg-light rounded d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-person text-muted"></i>
+                                </div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <strong>{{ staff.displayName }}</strong><br>
+                            <small class="text-muted">{{ staff.staffId }}</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-{{ staff.staffRole == 'ROLE_GROOMER' ? 'info' : staff.staffRole == 'ROLE_MANAGER' ? 'warning' : 'secondary' }}">
+                                {{ staff.getRoleLabel() }}
+                            </span>
+                        </td>
+                        <td>{{ staff.experienceYears ?? '0' }} years</td>
+                        <td>${{ staff.hourlyRate|number_format(2) }}/hr</td>
+                        <td>
+                            {% if staff.employmentStatus == 'Active' %}
+                                <span class="badge bg-success">Active</span>
+                            {% elseif staff.employmentStatus == 'On Leave' %}
+                                <span class="badge bg-warning">On Leave</span>
+                            {% else %}
+                                <span class="badge bg-danger">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ staff.appointments|length }}</td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="{{ path('app_staff_management_show', {'id': staff.id}) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{{ path('app_staff_management_edit', {'id': staff.id}) }}" class="btn btn-sm btn-outline-warning">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="{{ path('app_staff_management_schedule', {'id': staff.id}) }}" class="btn btn-sm btn-outline-info">
+                                    <i class="bi bi-calendar"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ staff.id }}">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                            
+                            <!-- Delete Modal -->
+                            <div class="modal fade" id="deleteModal{{ staff.id }}" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Confirm Delete</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you want to remove <strong>{{ staff.displayName }}</strong> from staff? This action cannot be undone.
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <form action="{{ path('app_staff_management_delete', {'id': staff.id}) }}" method="post" class="d-inline">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ staff.id) }}">
+                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#staffTable').DataTable({
+                order: [[0, 'desc']],
+                pageLength: 25,
+                responsive: true,
+                columnDefs: [
+                    { orderable: false, targets: [1, 8] }
+                ]
+            });
+        });
+    </script>
+{% endblock %}

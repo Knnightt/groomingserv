@@ -1,0 +1,196 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% from 'dashboard/components/form_layout.html.twig' import form_header, form_actions %}
+
+{% block title %}{{ staff.id ? 'Edit' : 'New' }} Staff - Dashboard{% endblock %}
+
+{% block dashboard_content %}  
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                {{ form_header(
+                    (staff.id ? 'Edit Staff Member' : 'Add New Staff Member'),
+                    (staff.id ? 'Update staff information' : 'Add a new staff member to your team')
+                ) }}
+                
+                <div class="card-body">
+                    {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form_row(form.user) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.staffId) }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            {{ form_row(form.staffRole) }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form_row(form.hourlyRate) }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form_row(form.employmentStatus) }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form_row(form.hireDate) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.experienceYears) }}
+                        </div>
+                    </div>
+                    
+                    {{ form_row(form.biography) }}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form_row(form.startTime) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.endTime) }}
+                        </div>
+                    </div>
+                    
+                    {{ form_row(form.workingDays) }}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form_row(form.specializations) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.certifications) }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-check mb-3">
+                                {{ form_row(form.canHandleAggressivePets) }}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-check mb-3">
+                                {{ form_row(form.isCertified) }}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            {{ form_row(form.photo) }}
+                        </div>
+                    </div>
+                    
+                    {{ form_actions(
+                        'app_staff_management_delete',
+                        staff.id,
+                        staff.id and is_granted('ROLE_ADMIN')
+                    ) }}
+                    
+                    {{ form_end(form) }}
+                </div>
+            </div>
+            
+            {% if staff.id %}
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">Staff Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <dl class="row mb-0">
+                                <dt class="col-sm-4">Years of Service:</dt>
+                                <dd class="col-sm-8">{{ staff.yearsOfService ?? 'N/A' }}</dd>
+                                
+                                <dt class="col-sm-4">Working Hours:</dt>
+                                <dd class="col-sm-8">{{ staff.workingHours }}</dd>
+                                
+                                <dt class="col-sm-4">Appointments:</dt>
+                                <dd class="col-sm-8">{{ staff.appointments|length }}</dd>
+                                
+                                <dt class="col-sm-4">Created:</dt>
+                                <dd class="col-sm-8">{{ staff.createdAt|date('M d, Y') }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">Staff Photo</h5>
+                        </div>
+                        <div class="card-body text-center">
+                            {% if form.photo.vars.value %}
+                                <img src="{{ form.photo.vars.value }}" alt="Staff Photo" 
+                                     class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                            {% else %}
+                                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto mb-3" 
+                                     style="width: 150px; height: 150px;">
+                                    <i class="bi bi-person-badge" style="font-size: 3rem; color: #ccc;"></i>
+                                </div>
+                            {% endif %}
+                            <h5 class="mb-1">{{ staff.displayName }}</h5>
+                            <p class="text-muted mb-0">{{ staff.roleLabel }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Collection widget for specializations
+    const collectionButtons = document.querySelectorAll('.collection-add');
+    collectionButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const collectionId = this.getAttribute('data-collection');
+            const collection = document.getElementById(collectionId);
+            const prototype = collection.getAttribute('data-prototype');
+            const index = collection.children.length;
+            
+            const newItem = prototype.replace(/__name__/g, index);
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = newItem;
+            
+            const newElement = tempDiv.firstElementChild;
+            collection.appendChild(newElement);
+            
+            // Add remove button
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'btn btn-sm btn-outline-danger collection-remove';
+            removeButton.innerHTML = '<i class="bi bi-trash"></i>';
+            removeButton.addEventListener('click', function() {
+                newElement.remove();
+            });
+            
+            const inputGroup = newElement.querySelector('.input-group');
+            if (inputGroup) {
+                inputGroup.appendChild(removeButton);
+            }
+        });
+    });
+    
+    // Remove buttons for existing items
+    document.querySelectorAll('.collection-remove').forEach(button => {
+        button.addEventListener('click', function() {
+            const item = this.closest('.mb-2');
+            if (item) {
+                item.remove();
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

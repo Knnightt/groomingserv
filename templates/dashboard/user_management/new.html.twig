@@ -1,0 +1,132 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Create New User{% endblock %}
+
+{% block dashboard_content %}  
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0">Create New User</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_user_management_index') }}">User Management</a></li>
+                <li class="breadcrumb-item active">New User</li>
+            </ol>
+        </nav>
+    </div>
+    <a href="{{ path('app_user_management_index') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Back to List
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">User Information</h5>
+            </div>
+            <div class="card-body">
+                {{ form_start(form) }}
+                <div class="row">
+                    <!-- Basic Information -->
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.email) }}
+                        {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+                        <div class="form-text">User's email address</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.username) }}
+                        {{ form_widget(form.username, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.plainPassword) }}
+                        {{ form_widget(form.plainPassword, {'attr': {'class': 'form-control'}}) }}
+                        <div class="form-text">Minimum 6 characters</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.roles) }}
+                        {{ form_widget(form.roles, {'attr': {'class': 'form-select'}}) }}
+                    </div>
+                </div>
+
+                <!-- Profile Information -->
+                <div class="row">
+                    <div class="col-12">
+                        <h6 class="border-bottom pb-2 mb-3">Profile Information</h6>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.fullName) }}
+                        {{ form_widget(form.fullName, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.phoneNumber) }}
+                        {{ form_widget(form.phoneNumber, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.gender) }}
+                        {{ form_widget(form.gender, {'attr': {'class': 'form-select'}}) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.dateOfBirth) }}
+                        {{ form_widget(form.dateOfBirth, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col-12 mb-3">
+                        {{ form_label(form.address) }}
+                        {{ form_widget(form.address, {'attr': {'class': 'form-control', 'rows': 2}}) }}
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        {{ form_label(form.city) }}
+                        {{ form_widget(form.city, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        {{ form_label(form.state) }}
+                        {{ form_widget(form.state, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        {{ form_label(form.zipCode) }}
+                        {{ form_widget(form.zipCode, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.country) }}
+                        {{ form_widget(form.country, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col-12 mb-3">
+                        {{ form_label(form.bio) }}
+                        {{ form_widget(form.bio, {'attr': {'class': 'form-control', 'rows': 3}}) }}
+                    </div>
+                </div>
+
+                <!-- Account Status -->
+                <div class="row">
+                    <div class="col-12">
+                        <h6 class="border-bottom pb-2 mb-3">Account Settings</h6>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="form-check form-switch">
+                            {{ form_widget(form.isActive, {'attr': {'class': 'form-check-input'}}) }}
+                            {{ form_label(form.isActive, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="form-check form-switch">
+                            {{ form_widget(form.isVerified, {'attr': {'class': 'form-check-input'}}) }}
+                            {{ form_label(form.isVerified, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <button type="reset" class="btn btn-secondary">Reset</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-1"></i> Create User
+                    </button>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

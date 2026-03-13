@@ -1,0 +1,387 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Appointment Details - #{{ appointment.id }}{% endblock %}
+
+{% block dashboard_content %}  
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0">Appointment Details</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_scheduling_index') }}">Scheduling</a></li>
+                <li class="breadcrumb-item active">#{{ appointment.id }}</li>
+            </ol>
+        </nav>
+    </div>
+    <div>
+        <a href="{{ path('app_scheduling_edit', {'id': appointment.id}) }}" class="btn btn-warning me-2">
+            <i class="bi bi-pencil me-1"></i> Edit
+        </a>
+        <a href="{{ path('app_scheduling_index') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to List
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Main Details -->
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Appointment Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>Appointment ID:</strong><br>
+                        <span class="text-muted">#{{ appointment.id }}</span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Status:</strong><br>
+                        {% if appointment.status == 'Pending' %}
+                            <span class="badge bg-warning">Pending</span>
+                        {% elseif appointment.status == 'Confirmed' %}
+                            <span class="badge bg-info">Confirmed</span>
+                        {% elseif appointment.status == 'Completed' %}
+                            <span class="badge bg-success">Completed</span>
+                        {% elseif appointment.status == 'Cancelled' %}
+                            <span class="badge bg-danger">Cancelled</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>Date & Time:</strong><br>
+                        <span class="text-muted">{{ appointment.startAt|date('l, F j, Y') }}</span><br>
+                        <span class="text-muted">{{ appointment.startAt|date('h:i A') }} - {{ appointment.endAt|date('h:i A') }}</span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Duration:</strong><br>
+                        <span class="text-muted">{{ appointment.getDuration() }} minutes</span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>Service:</strong><br>
+                        <span class="text-muted">{{ appointment.service.name }}</span><br>
+                        <small class="text-muted">{{ appointment.service.category }}</small>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Assigned Staff:</strong><br>
+                        {% if appointment.assignedStaff %}
+                            <span class="text-muted">{{ appointment.assignedStaff.displayName }}</span><br>
+                            <small class="text-muted">{{ appointment.assignedStaff.getRoleLabel() }}</small>
+                        {% else %}
+                            <span class="text-danger">Not assigned</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if appointment.notes %}
+                <div class="mb-3">
+                    <strong>Customer Notes:</strong><br>
+                    <p class="text-muted">{{ appointment.notes }}</p>
+                </div>
+                {% endif %}
+
+                {% if appointment.groomerNotes %}
+                <div class="mb-3">
+                    <strong>Groomer Notes:</strong><br>
+                    <p class="text-muted">{{ appointment.groomerNotes }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Customer & Pet Information -->
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="card-title mb-0">Customer Information</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            {% if appointment.customer.userProfile and appointment.customer.userProfile.photo %}
+                                <img src="{{ appointment.customer.userProfile.photo }}" alt="{{ appointment.customer.username }}" class="rounded-circle me-3" style="width: 60px; height: 60px;">
+                            {% else %}
+                                <div class="avatar bg-secondary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
+                                    <i class="bi bi-person text-white" style="font-size: 2rem;"></i>
+                                </div>
+                            {% endif %}
+                            <div>
+                                <h5 class="mb-0">{{ appointment.customer.displayName }}</h5>
+                                <p class="text-muted mb-0">{{ appointment.customer.email }}</p>
+                            </div>
+                        </div>
+                        <table class="table table-sm table-borderless">
+                            <tr>
+                                <td width="40%">Phone:</td>
+                                <td>{{ appointment.customer.userProfile.phoneNumber ?? 'N/A' }}</td>
+                            </tr>
+                            <tr>
+                                <td>Total Appointments:</td>
+                                <td>{{ customer_appointments }}</td>
+                            </tr>
+                            <tr>
+                                <td>Member Since:</td>
+                                <td>{{ appointment.customer.createdAt|date('M Y') }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="card-title mb-0">Pet Information</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            {% if appointment.pet.photo %}
+                                <img src="{{ appointment.pet.photo }}" alt="{{ appointment.pet.name }}" class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                            {% else %}
+                                <div class="avatar bg-light rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
+                                    <i class="bi bi-paw text-muted" style="font-size: 2rem;"></i>
+                                </div>
+                            {% endif %}
+                            <div>
+                                <h5 class="mb-0">{{ appointment.pet.name }}</h5>
+                                <p class="text-muted mb-0">{{ appointment.pet.species }} • {{ appointment.pet.breed }}</p>
+                            </div>
+                        </div>
+                        <table class="table table-sm table-borderless">
+                            <tr>
+                                <td width="40%">Age:</td>
+                                <td>{{ appointment.pet.age ?? 'N/A' }} years</td>
+                            </tr>
+                            <tr>
+                                <td>Gender:</td>
+                                <td>{{ appointment.pet.gender ?? 'N/A' }}</td>
+                            </tr>
+                            <tr>
+                                <td>Weight:</td>
+                                <td>{{ appointment.pet.weight ?? 'N/A' }} kg</td>
+                            </tr>
+                            <tr>
+                                <td>Vaccinated:</td>
+                                <td>
+                                    {% if appointment.pet.isVaccinated %}
+                                        <span class="badge bg-success">Yes</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">No</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Payment Information -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="card-title mb-0">Payment Information</h6>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm table-borderless">
+                    <tr>
+                        <td>Service Fee:</td>
+                        <td class="text-end">${{ appointment.amount|number_format(2) }}</td>
+                    </tr>
+                    {% if appointment.discount %}
+                    <tr>
+                        <td>Discount:</td>
+                        <td class="text-end text-danger">-${{ appointment.discount|number_format(2) }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if appointment.tax %}
+                    <tr>
+                        <td>Tax:</td>
+                        <td class="text-end">${{ appointment.tax|number_format(2) }}</td>
+                    </tr>
+                    {% endif %}
+                    <tr class="border-top">
+                        <td><strong>Total Amount:</strong></td>
+                        <td class="text-end"><strong>${{ appointment.getTotalAmount()|number_format(2) }}</strong></td>
+                    </tr>
+                </table>
+                
+                <div class="d-grid gap-2">
+                    {% if appointment.isPaid %}
+                        <button class="btn btn-success disabled">
+                            <i class="bi bi-check-circle me-2"></i> Paid
+                        </button>
+                        <small class="text-muted text-center">
+                            Paid on {{ appointment.paymentDate|date('M d, Y') }}<br>
+                            via {{ appointment.paymentMethod }}
+                        </small>
+                    {% else %}
+                        <button class="btn btn-outline-danger" onclick="markAsPaid({{ appointment.id }})">
+                            <i class="bi bi-currency-dollar me-2"></i> Mark as Paid
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="card-title mb-0">Quick Actions</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ path('app_scheduling_edit', {'id': appointment.id}) }}" class="btn btn-outline-primary">
+                        <i class="bi bi-pencil me-2"></i> Edit Appointment
+                    </a>
+                    
+                    {% if appointment.status == 'Pending' %}
+                        <button class="btn btn-outline-info" onclick="updateStatus({{ appointment.id }}, 'Confirmed')">
+                            <i class="bi bi-check-circle me-2"></i> Confirm Appointment
+                        </button>
+                    {% endif %}
+                    
+                    {% if appointment.status == 'Confirmed' %}
+                        <button class="btn btn-outline-success" onclick="updateStatus({{ appointment.id }}, 'Completed')">
+                            <i class="bi bi-check-all me-2"></i> Mark as Completed
+                        </button>
+                    {% endif %}
+                    
+                    {% if appointment.status != 'Cancelled' %}
+                        <button class="btn btn-outline-danger" onclick="updateStatus({{ appointment.id }}, 'Cancelled')">
+                            <i class="bi bi-x-circle me-2"></i> Cancel Appointment
+                        </button>
+                    {% endif %}
+                    
+                    <button class="btn btn-outline-warning" onclick="sendReminder({{ appointment.id }})">
+                        <i class="bi bi-bell me-2"></i> Send Reminder
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appointment History -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">Appointment History</h6>
+            </div>
+            <div class="card-body">
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <small class="text-muted">{{ appointment.createdAt|date('M d, Y H:i') }}</small>
+                            <p class="mb-0">Appointment created</p>
+                        </div>
+                    </div>
+                    {% if appointment.updatedAt %}
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <small class="text-muted">{{ appointment.updatedAt|date('M d, Y H:i') }}</small>
+                            <p class="mb-0">Last updated</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if appointment.reminderSent %}
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <small class="text-muted">Reminder sent</small>
+                            <p class="mb-0">Email reminder sent to customer</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        function markAsPaid(appointmentId) {
+            if (confirm('Mark this appointment as paid?')) {
+                fetch('/dashboard/scheduling/' + appointmentId + '/mark-paid', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-Token': '{{ csrf_token("mark_paid") }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    }
+                });
+            }
+        }
+        
+        function updateStatus(appointmentId, newStatus) {
+            if (confirm('Change appointment status to "' + newStatus + '"?')) {
+                fetch('/dashboard/scheduling/' + appointmentId + '/update-status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': '{{ csrf_token("update_status") }}'
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    }
+                });
+            }
+        }
+        
+        function sendReminder(appointmentId) {
+            fetch('/dashboard/scheduling/' + appointmentId + '/send-reminder', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-Token': '{{ csrf_token("send_reminder") }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Reminder sent successfully!');
+                }
+            });
+        }
+    </script>
+    <style>
+        .timeline {
+            position: relative;
+            padding-left: 20px;
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        .timeline-marker {
+            position: absolute;
+            left: -20px;
+            top: 5px;
+            width: 10px;
+            height: 10px;
+            background: #6c757d;
+            border-radius: 50%;
+        }
+        .timeline-content {
+            padding-left: 5px;
+        }
+    </style>
+{% endblock %}

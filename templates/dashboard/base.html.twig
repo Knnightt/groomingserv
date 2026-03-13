@@ -1,0 +1,165 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard - {% block dashboard_title %}{% endblock %}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block navigation %}
+    {{ parent() }}
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-2 d-none d-md-block bg-light sidebar border-end">
+                <div class="position-sticky pt-3">
+                    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') or is_granted('ROLE_STAFF') %}
+                        {# Admin/Manager/Staff Navigation #}
+                        <div class="mb-3">
+                            <h6 class="px-3 text-muted text-uppercase small fw-bold">Management</h6>
+                            <ul class="nav flex-column">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('app_dashboard') }}">
+                                        <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                                    </a>
+                                </li>
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ path('app_user_management_index') }}">
+                                            <i class="bi bi-people me-2"></i>Users
+                                        </a>
+                                    </li>
+                                     <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('app_activity_log_index') }}">
+                                        <i class="bi bi-clock-history me-2"></i>Activity Log
+                                    </a>
+                                </li>
+                                {% endif %}
+                                {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ path('app_staff_management_index') }}">
+                                            <i class="bi bi-person-badge me-2"></i>Staff
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ path('app_service_index') }}">
+                                            <i class="bi bi-scissors me-2"></i>Services
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+
+                        <div class="mb-3">
+                            <h6 class="px-3 text-muted text-uppercase small fw-bold">Operations</h6>
+                            <ul class="nav flex-column">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('app_scheduling_index') }}">
+                                        <i class="bi bi-calendar-check me-2"></i>Appointments
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('app_pet_index') }}">
+                                        <i class="bi bi-paw me-2"></i>Pets
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-3">
+                            <h6 class="px-3 text-muted text-uppercase small fw-bold">Analytics</h6>
+                            <ul class="nav flex-column">
+                                {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ path('app_analytics_index') }}">
+                                            <i class="bi bi-graph-up me-2"></i>Reports
+                                        </a>
+                                    </li>
+                                {% endif %}
+                               
+                            </ul>
+                        </div>
+
+                        <div class="mb-3 border-top pt-3">
+                            <h6 class="px-3 text-muted text-uppercase small fw-bold">Account</h6>
+                            <ul class="nav flex-column">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('app_settings_index') }}">
+                                        <i class="bi bi-gear me-2"></i>Settings
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('app_logout') }}">
+                                        <i class="bi bi-box-arrow-right me-2"></i>Logout
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        {# Customer/User Navigation #}
+                        <div class="mb-3">
+                            <h6 class="px-3 text-muted text-uppercase small fw-bold">My Account</h6>
+                            <ul class="nav flex-column">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('app_dashboard') }}">
+                                        <i class="bi bi-house me-2"></i>Dashboard
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('app_scheduling_index') }}">
+                                        <i class="bi bi-calendar-check me-2"></i>My Appointments
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-3">
+                            <h6 class="px-3 text-muted text-uppercase small fw-bold">Pets</h6>
+                            <ul class="nav flex-column">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('app_pet_index') }}">
+                                        <i class="bi bi-paw me-2"></i>My Pets
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('app_scheduling_new') }}">
+                                        <i class="bi bi-plus-circle me-2"></i>Book Appointment
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-3 border-top pt-3">
+                            <h6 class="px-3 text-muted text-uppercase small fw-bold">Account</h6>
+                            <ul class="nav flex-column">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('app_settings_index') }}">
+                                        <i class="bi bi-person-circle me-2"></i>Profile
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('app_logout') }}">
+                                        <i class="bi bi-box-arrow-right me-2"></i>Logout
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
+            </nav>
+
+            <main class="col-md-10 ms-sm-auto px-4 py-4">
+                {% block dashboard_content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script src="/js/dashboard.js"></script>
+{% endblock %}

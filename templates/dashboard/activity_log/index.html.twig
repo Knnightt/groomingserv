@@ -1,0 +1,300 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Activity Logs{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    {{ parent() }}
+{% endblock %}
+
+{% block dashboard_content %}  
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Activity Logs</h1>
+    <div>
+        <a href="{{ path('app_activity_log_my_activities') }}" class="btn btn-outline-primary me-2">
+            <i class="bi bi-person me-1"></i> My Activities
+        </a>
+        <a href="{{ path('app_activity_log_search') }}" class="btn btn-outline-info">
+            <i class="bi bi-search me-1"></i> Advanced Search
+        </a>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card border-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-muted">Total Activities</h6>
+                        <h3 class="mb-0">{{ total_items|default(0) }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-activity text-primary fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-muted">Today's Activities</h6>
+                        <h3 class="mb-0">{{ today_activities_count|default(0) }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-calendar-day text-success fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-muted">Unique Users</h6>
+                        <h3 class="mb-0">{{ unique_users|default(0) }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-people text-warning fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-info">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-muted">Most Active User</h6>
+                        <h5 class="mb-0">{{ most_active_user_email|default('None') }}</h5>
+                        {% if most_active_user_count is defined %}
+                            <small class="text-muted">{{ most_active_user_count }} activities</small>
+                        {% endif %}
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-star-fill text-info fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Date Range</label>
+                <input type="date" class="form-control" name="start_date" value="{{ start_date|default('') }}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">&nbsp;</label>
+                <input type="date" class="form-control" name="end_date" value="{{ end_date|default('') }}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">User</label>
+                <select class="form-select" name="user_id">
+                    <option value="">All Users</option>
+                    {% for user in users|default([]) %}
+                        <option value="{{ user.id }}" {{ user_id|default('') == user.id ? 'selected' : '' }}>
+                            {{ user.email }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Action Type</label>
+                <select class="form-select" name="action_type">
+                    <option value="">All Actions</option>
+                    <option value="login" {{ action_type|default('') == 'login' ? 'selected' : '' }}>Login</option>
+                    <option value="logout" {{ action_type|default('') == 'logout' ? 'selected' : '' }}>Logout</option>
+                    <option value="create" {{ action_type|default('') == 'create' ? 'selected' : '' }}>Create</option>
+                    <option value="update" {{ action_type|default('') == 'update' ? 'selected' : '' }}>Update</option>
+                    <option value="delete" {{ action_type|default('') == 'delete' ? 'selected' : '' }}>Delete</option>
+                    <option value="view" {{ action_type|default('') == 'view' ? 'selected' : '' }}>View</option>
+                </select>
+            </div>
+            <div class="col-12">
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="{{ path('app_activity_log_index') }}" class="btn btn-secondary">Clear Filters</a>
+                    <button type="submit" class="btn btn-primary">Apply Filters</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Activity Logs Table -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">All Activity Logs</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="activityLogsTable" class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Timestamp</th>
+                        <th>User</th>
+                        <th>Action</th>
+                        <th>Description</th>
+                        <th>IP Address</th>
+                        <th>Route</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in activity_logs %}
+                    <tr>
+                        <td>{{ log.id }}</td>
+                        <td>
+                            <strong>{{ log.createdAt|date('Y-m-d') }}</strong><br>
+                            <small class="text-muted">{{ log.createdAt|date('H:i:s') }}</small>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm me-2">
+                                    <div class="avatar-sm bg-secondary rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-person text-white"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    {% if log.user %}
+                                        {{ log.user.email }}<br>
+                                        <small class="text-muted">
+                                            {% if log.user.firstName is defined and log.user.firstName %}
+                                                {{ log.user.firstName }} {{ log.user.lastName|default('') }}
+                                            {% else %}
+                                                User #{{ log.user.id }}
+                                            {% endif %}
+                                        </small>
+                                    {% else %}
+                                        <span class="text-muted">System</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            {% set badge_color = 'primary' %}
+                            {% if log.action == 'login' %}{% set badge_color = 'success' %}{% endif %}
+                            {% if log.action == 'logout' %}{% set badge_color = 'warning' %}{% endif %}
+                            {% if log.action == 'create' %}{% set badge_color = 'info' %}{% endif %}
+                            {% if log.action == 'delete' %}{% set badge_color = 'danger' %}{% endif %}
+                            
+                            <span class="badge bg-{{ badge_color }}">
+                                {{ log.action|capitalize }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if log.description %}
+                                {{ log.description|slice(0, 50) }}{{ log.description|length > 50 ? '...' : '' }}
+                            {% else %}
+                                <span class="text-muted">No description</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if log.ipAddress %}
+                                <code>{{ log.ipAddress }}</code><br>
+                            {% endif %}
+                            {% if log.userAgent %}
+                                <small class="text-muted">{{ log.userAgent|slice(0, 20) }}{{ log.userAgent|length > 20 ? '...' : '' }}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if log.route %}
+                                <small class="text-muted">{{ log.route }}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="{{ path('app_activity_log_show', {'id': log.id}) }}" class="btn btn-sm btn-outline-primary" title="View Details">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" disabled title="Logs cannot be deleted (read-only)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted">
+                            No activity logs found
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Export Options -->
+<div class="card mt-4">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Export Logs</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <button class="btn btn-outline-primary w-100" onclick="exportLogs('csv')">
+                    <i class="bi bi-file-earmark-spreadsheet me-2"></i> Export as CSV
+                </button>
+            </div>
+            <div class="col-md-4 mb-3">
+                <button class="btn btn-outline-success w-100" onclick="exportLogs('pdf')">
+                    <i class="bi bi-file-earmark-pdf me-2"></i> Export as PDF
+                </button>
+            </div>
+            <div class="col-md-4 mb-3">
+                <button class="btn btn-outline-warning w-100" onclick="exportLogs('json')">
+                    <i class="bi bi-file-earmark-code me-2"></i> Export as JSON
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#activityLogsTable').DataTable({
+                order: [[1, 'desc']],  // Sort by timestamp column (descending)
+                pageLength: 50,
+                // REMOVE the responsive: true line
+                // responsive: true,  // ← COMMENT THIS OUT OR REMOVE IT
+                columnDefs: [
+                    { orderable: false, targets: [7] }  // Make actions column not sortable
+                ],
+                // Add these options to control height and scrolling:
+                scrollY: '400px',  // Set a fixed height for vertical scrolling
+                scrollCollapse: true,
+                paging: true,
+                // Optional: Add horizontal scroll if needed
+                // scrollX: true
+            });
+        });
+        
+        function exportLogs(format) {
+            let url = '/dashboard/activity-logs/export?format=' + format;
+            
+            // Add filter parameters
+            const params = new URLSearchParams(window.location.search);
+            url += '&' + params.toString();
+            
+            window.open(url, '_blank');
+        }
+    </script>
+{% endblock %}

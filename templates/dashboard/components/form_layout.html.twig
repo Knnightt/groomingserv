@@ -1,0 +1,52 @@
+{# Reusable form layout for dashboard forms #}
+{% macro form_header(title, subtitle) %}
+    <div class="card-header bg-white border-bottom-0 pb-0">
+        <div class="row align-items-center">
+            <div class="col">
+                <h4 class="mb-0">{{ title }}</h4>
+                {% if subtitle %}
+                    <p class="text-muted mb-0">{{ subtitle }}</p>
+                {% endif %}
+            </div>
+            <div class="col-auto">
+                <a href="javascript:history.back()" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i>Back
+                </a>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro form_actions(delete_route, entity_id, show_delete) %}
+    <div class="card-footer bg-white border-top-0 pt-0">
+        <div class="row">
+            <div class="col">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-circle me-1"></i>Save
+                </button>
+                <a href="javascript:history.back()" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+            {% if show_delete and delete_route and entity_id %}
+                <div class="col-auto">
+                    <form method="post" action="{{ path(delete_route, {'id': entity_id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ entity_id) }}">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash me-1"></i>Delete
+                        </button>
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro form_errors(form) %}
+    {% if form.vars.errors|length > 0 %}
+        <div class="alert alert-danger">
+            <h5 class="alert-heading">Please fix the following errors:</h5>
+            <ul class="mb-0">
+                {{ form_errors(form) }}
+            </ul>
+        </div>
+    {% endif %}
+{% endmacro %}

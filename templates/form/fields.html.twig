@@ -1,0 +1,126 @@
+{% extends 'bootstrap_5_layout.html.twig' %}
+
+{% block form_row %}
+    {% set widget_attr = {} %}
+    {% if help is not empty %}
+        {% set widget_attr = {attr: {'aria-describedby': id ~"_help"}} %}
+    {% endif %}
+    <div class="mb-3{% if (not compound or force_error|default(false)) and not valid %} is-invalid{% endif %}">
+        {{- form_label(form) -}}
+        {{- form_widget(form, widget_attr) -}}
+        {{- form_help(form) -}}
+        {{- form_errors(form) -}}
+    </div>
+{% endblock %}
+
+{% block form_label %}
+    {% if label is not same as(false) -%}
+        {% if not compound -%}
+            {% set label_attr = label_attr|merge({'for': id}) %}
+        {%- endif -%}
+        {% if required -%}
+            {% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' required')|trim}) %}
+        {%- endif -%}
+        <label{% for attrname, attrvalue in label_attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %} class="form-label fw-semibold">
+            {{- label|trans({}, translation_domain) -}}
+            {% if required %}<span class="text-danger">*</span>{% endif %}
+        </label>
+    {%- endif %}
+{% endblock %}
+
+{% block form_widget_simple %}
+    {% set attr = attr|merge({class: (attr.class|default('') ~ ' form-control')|trim}) %}
+    {{- parent() -}}
+{% endblock %}
+
+{% block textarea_widget %}
+    {% set attr = attr|merge({class: (attr.class|default('') ~ ' form-control')|trim}) %}
+    {{- parent() -}}
+{% endblock %}
+
+{% block choice_widget %}
+    {% set attr = attr|merge({class: (attr.class|default('') ~ ' form-select')|trim}) %}
+    {{- parent() -}}
+{% endblock %}
+
+{% block checkbox_widget %}
+    <div class="form-check">
+        <input type="checkbox" {{ block('widget_attributes') }} class="form-check-input" {% if value is defined %} value="{{ value }}"{% endif %}{% if checked %} checked="checked"{% endif %} />
+        <label class="form-check-label" for="{{ id }}">
+            {{ label|trans({}, translation_domain) }}
+        </label>
+    </div>
+{% endblock %}
+
+{% block radio_widget %}
+    <div class="form-check">
+        <input type="radio" {{ block('widget_attributes') }} class="form-check-input" {% if value is defined %} value="{{ value }}"{% endif %}{% if checked %} checked="checked"{% endif %} />
+        <label class="form-check-label" for="{{ id }}">
+            {{ label|trans({}, translation_domain) }}
+        </label>
+    </div>
+{% endblock %}
+
+{% block money_widget %}
+    <div class="input-group">
+        <span class="input-group-text">$</span>
+        {% set attr = attr|merge({class: (attr.class|default('') ~ ' form-control')|trim}) %}
+        {{- parent() -}}
+    </div>
+{% endblock %}
+
+{% block datetime_widget %}
+    <div class="input-group">
+        {% set attr = attr|merge({class: (attr.class|default('') ~ ' form-control datetimepicker')|trim}) %}
+        {{- parent() -}}
+        <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+    </div>
+{% endblock %}
+
+{% block date_widget %}
+    <div class="input-group">
+        {% set attr = attr|merge({class: (attr.class|default('') ~ ' form-control datepicker')|trim}) %}
+        {{- parent() -}}
+        <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+    </div>
+{% endblock %}
+
+{% block time_widget %}
+    <div class="input-group">
+        {% set attr = attr|merge({class: (attr.class|default('') ~ ' form-control timepicker')|trim}) %}
+        {{- parent() -}}
+        <span class="input-group-text"><i class="bi bi-clock"></i></span>
+    </div>
+{% endblock %}
+
+{% block collection_widget %}
+    {% if prototype is defined %}
+        {% set attr = attr|merge({'data-prototype': form_row(prototype)}) %}
+    {% endif %}
+    <div {{ block('widget_container_attributes') }} class="collection-widget">
+        {% for child in form %}
+            {{ form_row(child) }}
+        {% endfor %}
+    </div>
+    {% if allow_add %}
+        <button type="button" class="btn btn-sm btn-outline-primary mt-2 collection-add" data-collection="{{ id }}">
+            <i class="bi bi-plus-circle me-1"></i>Add Item
+        </button>
+    {% endif %}
+{% endblock %}
+
+{% block form_errors %}
+    {% if errors|length > 0 %}
+        <div class="invalid-feedback d-block">
+            {% for error in errors %}
+                <div>{{ error.message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block form_help %}
+    {% if help is not empty %}
+        <div id="{{ id }}_help" class="form-text">{{ help|trans({}, translation_domain)|raw }}</div>
+    {% endif %}
+{% endblock %}

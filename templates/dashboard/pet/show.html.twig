@@ -1,0 +1,254 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Pet Details - {{ pet.name }}{% endblock %}
+
+{% block dashboard_content %}  
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0">Pet Details</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_pet_index') }}">Pets</a></li>
+                <li class="breadcrumb-item active">{{ pet.name }}</li>
+            </ol>
+        </nav>
+    </div>
+    <div>
+        <a href="{{ path('app_pet_edit', {'id': pet.id}) }}" class="btn btn-warning me-2">
+            <i class="bi bi-pencil me-1"></i> Edit
+        </a>
+        <a href="{{ path('app_pet_index') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to List
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Pet Profile -->
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                {% if pet.photo %}
+                    <img src="{{ pet.photo }}" alt="{{ pet.name }}" class="rounded-circle mb-3" style="width: 200px; height: 200px; object-fit: cover;">
+                {% else %}
+                    <div class="avatar-xl bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3">
+                        <i class="bi bi-paw text-muted" style="font-size: 5rem;"></i>
+                    </div>
+                {% endif %}
+                <h3>{{ pet.name }}</h3>
+                <p class="text-muted">{{ pet.species }} • {{ pet.breed ?? 'Unknown breed' }}</p>
+                
+                <div class="d-flex justify-content-center gap-2 mb-3">
+                    {% if pet.isVaccinated %}
+                        <span class="badge bg-success">Vaccinated</span>
+                    {% endif %}
+                    {% if pet.isNeutered %}
+                        <span class="badge bg-info">Neutered</span>
+                    {% endif %}
+                    {% if pet.temperament %}
+                        <span class="badge bg-warning">{{ pet.temperament }}</span>
+                    {% endif %}
+                </div>
+                
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <span>Owner:</span>
+                            <strong>{{ pet.owner.displayName }}</strong>
+                        </div>
+                    </div>
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <span>Age:</span>
+                            <strong>{{ pet.age ?? 'Unknown' }} years</strong>
+                        </div>
+                    </div>
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <span>Gender:</span>
+                            <strong>{{ pet.gender ?? 'Unknown' }}</strong>
+                        </div>
+                    </div>
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <span>Weight:</span>
+                            <strong>{{ pet.weight ?? 'Unknown' }} kg</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">Quick Actions</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ path('app_scheduling_new', {'pet_id': pet.id}) }}" class="btn btn-outline-primary">
+                        <i class="bi bi-calendar-plus me-2"></i> Schedule Appointment
+                    </a>
+                    <a href="{{ path('app_pet_edit', {'id': pet.id}) }}" class="btn btn-outline-warning">
+                        <i class="bi bi-pencil me-2"></i> Edit Pet Info
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pet Details -->
+    <div class="col-lg-8">
+        <div class="row">
+            <!-- Basic Information -->
+            <div class="col-12 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Basic Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th width="40%">Species:</th>
+                                        <td>{{ pet.species }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Breed:</th>
+                                        <td>{{ pet.breed ?? 'Unknown' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Life Stage:</th>
+                                        <td>{{ pet.lifeStage ?? 'Unknown' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Coat Type:</th>
+                                        <td>{{ pet.coatType ?? 'Unknown' }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th width="40%">Weight:</th>
+                                        <td>{{ pet.weight ?? 'Unknown' }} kg</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Vaccinated:</th>
+                                        <td>
+                                            {% if pet.isVaccinated %}
+                                                <span class="badge bg-success">Yes</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">No</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Neutered:</th>
+                                        <td>
+                                            {% if pet.isNeutered %}
+                                                <span class="badge bg-success">Yes</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">No</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Registered:</th>
+                                        <td>{{ pet.createdAt|date('Y-m-d') }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Medical Information -->
+            {% if pet.medicalNotes or pet.allergies %}
+            <div class="col-12 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Medical Information</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if pet.medicalNotes %}
+                        <div class="mb-3">
+                            <strong>Medical Notes:</strong>
+                            <p class="text-muted">{{ pet.medicalNotes }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if pet.allergies %}
+                        <div class="alert alert-warning">
+                            <strong><i class="bi bi-exclamation-triangle me-2"></i>Allergies:</strong>
+                            <p class="mb-0">{{ pet.allergies }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Appointments -->
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Appointment History</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if pet.appointments|length > 0 %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Service</th>
+                                        <th>Status</th>
+                                        <th>Amount</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for appointment in pet.appointments|slice(0, 5) %}
+                                    <tr>
+                                        <td>{{ appointment.startAt|date('M d, Y') }}</td>
+                                        <td>{{ appointment.service.name }}</td>
+                                        <td>
+                                            <span class="badge bg-{{ appointment.status == 'Completed' ? 'success' : appointment.status == 'Confirmed' ? 'info' : 'warning' }}">
+                                                {{ appointment.status }}
+                                            </span>
+                                        </td>
+                                        <td>${{ appointment.amount|number_format(2) }}</td>
+                                        <td>
+                                            <a href="{{ path('app_scheduling_show', {'id': appointment.id}) }}" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% if pet.appointments|length > 5 %}
+                        <div class="text-center mt-3">
+                            <a href="{{ path('app_scheduling_index', {'pet_id': pet.id}) }}" class="btn btn-outline-secondary btn-sm">
+                                View All {{ pet.appointments|length }} Appointments
+                            </a>
+                        </div>
+                        {% endif %}
+                        {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-calendar-x text-muted" style="font-size: 3rem;"></i>
+                            <p class="text-muted mt-2">No appointments yet</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

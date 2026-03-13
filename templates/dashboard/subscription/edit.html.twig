@@ -1,0 +1,106 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Edit Subscription - #{{ subscription.id }}{% endblock %}
+{% block dashboard_content %}  
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0">Edit Subscription</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_subscription_index') }}">Subscriptions</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_subscription_show', {'id': subscription.id}) }}">#{{ subscription.id }}</a></li>
+                <li class="breadcrumb-item active">Edit</li>
+            </ol>
+        </nav>
+    </div>
+    <div>
+        <a href="{{ path('app_subscription_show', {'id': subscription.id}) }}" class="btn btn-outline-secondary me-2">
+            <i class="bi bi-eye me-1"></i> View
+        </a>
+        <a href="{{ path('app_subscription_index') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to List
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Edit Subscription Information</h5>
+            </div>
+            <div class="card-body">
+                {{ form_start(form) }}
+                <div class="row">
+                    <!-- Customer Selection -->
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.user) }}
+                        {{ form_widget(form.user, {'attr': {'class': 'form-select'}}) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.plan) }}
+                        {{ form_widget(form.plan, {'attr': {'class': 'form-select'}}) }}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.amount) }}
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            {{ form_widget(form.amount, {'attr': {'class': 'form-control'}}) }}
+                            <span class="input-group-text">/month</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.status) }}
+                        {{ form_widget(form.status, {'attr': {'class': 'form-select'}}) }}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.startDate) }}
+                        {{ form_widget(form.startDate, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.endDate) }}
+                        {{ form_widget(form.endDate, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.renewalDate) }}
+                        {{ form_widget(form.renewalDate, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+
+                <!-- Stripe Integration -->
+                <div class="row">
+                    <div class="col-12">
+                        <h6 class="border-bottom pb-2 mb-3">Payment Integration</h6>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.stripeCustomerId) }}
+                        {{ form_widget(form.stripeCustomerId, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.stripeSubscriptionId) }}
+                        {{ form_widget(form.stripeSubscriptionId, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <a href="{{ path('app_subscription_show', {'id': subscription.id}) }}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-1"></i> Save Changes
+                    </button>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

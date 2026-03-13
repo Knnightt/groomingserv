@@ -1,0 +1,163 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Edit Staff - {{ staff.displayName }}{% endblock %}
+
+{% block dashboard_content %}  
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0">Edit Staff Member</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_dashboard_staff_management_index') }}">Staff</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_dashboard_staff_management_show', {'id': staff.id}) }}">{{ staff.displayName }}</a></li>
+                <li class="breadcrumb-item active">Edit</li>
+            </ol>
+        </nav>
+    </div>
+    <div>
+        <a href="{{ path('app_dashboard_staff_management_show', {'id': staff.id}) }}" class="btn btn-outline-secondary me-2">
+            <i class="bi bi-eye me-1"></i> View
+        </a>
+        <a href="{{ path('app_dashboard_staff_management_index') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to List
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Edit Staff Information</h5>
+            </div>
+            <div class="card-body">
+                {{ form_start(form) }}
+                
+                <!-- Professional Information -->
+                <div class="mb-4">
+                    <h6 class="border-bottom pb-2 mb-3">Professional Information</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(form.staffId) }}
+                            {{ form_widget(form.staffId, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(form.staffRole) }}
+                            {{ form_widget(form.staffRole, {'attr': {'class': 'form-select'}}) }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(form.hourlyRate) }}
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                {{ form_widget(form.hourlyRate, {'attr': {'class': 'form-control'}}) }}
+                                <span class="input-group-text">/hr</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(form.experienceYears) }}
+                            <div class="input-group">
+                                {{ form_widget(form.experienceYears, {'attr': {'class': 'form-control'}}) }}
+                                <span class="input-group-text">years</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.specializations) }}
+                        {{ form_widget(form.specializations, {'attr': {'class': 'form-control', 'rows': 2}}) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.certifications) }}
+                        {{ form_widget(form.certifications, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.biography) }}
+                        {{ form_widget(form.biography, {'attr': {'class': 'form-control', 'rows': 3}}) }}
+                    </div>
+                </div>
+
+                <!-- Employment Details -->
+                <div class="mb-4">
+                    <h6 class="border-bottom pb-2 mb-3">Employment Details</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(form.hireDate) }}
+                            {{ form_widget(form.hireDate, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(form.employmentStatus) }}
+                            {{ form_widget(form.employmentStatus, {'attr': {'class': 'form-select'}}) }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Working Schedule -->
+                <div class="mb-4">
+                    <h6 class="border-bottom pb-2 mb-3">Working Schedule</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(form.workingDays) }}
+                            {{ form_widget(form.workingDays, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            {{ form_label(form.startTime) }}
+                            {{ form_widget(form.startTime, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            {{ form_label(form.endTime) }}
+                            {{ form_widget(form.endTime, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Capabilities -->
+                <div class="mb-4">
+                    <h6 class="border-bottom pb-2 mb-3">Capabilities</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check form-switch">
+                                {{ form_widget(form.isCertified, {'attr': {'class': 'form-check-input'}}) }}
+                                {{ form_label(form.isCertified, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check form-switch">
+                                {{ form_widget(form.canHandleAggressivePets, {'attr': {'class': 'form-check-input'}}) }}
+                                {{ form_label(form.canHandleAggressivePets, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Photo -->
+                <div class="mb-4">
+                    <h6 class="border-bottom pb-2 mb-3">Profile Photo</h6>
+                    <div class="mb-3">
+                        {{ form_label(form.photo) }}
+                        {{ form_widget(form.photo, {'attr': {'class': 'form-control'}}) }}
+                        {% if staff.photo %}
+                        <div class="mt-2">
+                            <img src="{{ staff.photo }}" alt="Current Photo" class="img-thumbnail" style="max-height: 150px;">
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <a href="{{ path('app_dashboard_staff_management_show', {'id': staff.id}) }}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-1"></i> Save Changes
+                    </button>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

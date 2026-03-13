@@ -1,0 +1,232 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Pet Management{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    {{ parent() }}
+{% endblock %}
+
+{% block dashboard_content %}  
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Pet Management</h1>
+    <a href="{{ path('app_pet_new') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i> Add New Pet
+    </a>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card border-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-muted">Total Pets</h6>
+                        <h3 class="mb-0">{{ pets|length }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-paw text-primary fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-muted">Dogs</h6>
+                        <h3 class="mb-0">{{ dog_count }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-heart-fill text-success fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-info">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-muted">Cats</h6>
+                        <h3 class="mb-0">{{ cat_count }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-star-fill text-info fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-muted">Other Pets</h6>
+                        <h3 class="mb-0">{{ other_pet_count }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-three-dots text-warning fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pets Table -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">All Pets</h5>
+        <div class="btn-group">
+            <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                <i class="bi bi-filter me-1"></i> Filter
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="?species=Dog">Dogs Only</a></li>
+                <li><a class="dropdown-item" href="?species=Cat">Cats Only</a></li>
+                <li><a class="dropdown-item" href="?vaccinated=1">Vaccinated</a></li>
+                <li><a class="dropdown-item" href="?">Show All</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="petsTable" class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Photo</th>
+                        <th>Name</th>
+                        <th>Species</th>
+                        <th>Breed</th>
+                        <th>Owner</th>
+                        <th>Age</th>
+                        <th>Status</th>
+                        <th>Appointments</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pet in pets %}
+                    <tr>
+                        <td>{{ pet.id }}</td>
+                        <td>
+                            {% if pet.photo %}
+                                <img src="{{ pet.photo }}" alt="{{ pet.name }}" class="rounded" style="width: 50px; height: 50px; object-fit: cover;">
+                            {% else %}
+                                <div class="avatar-sm bg-light rounded d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-paw text-muted"></i>
+                                </div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <strong>{{ pet.name }}</strong><br>
+                            <small class="text-muted">{{ pet.gender ?? 'Unknown' }}</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-{{ pet.species == 'Dog' ? 'primary' : pet.species == 'Cat' ? 'info' : 'secondary' }}">
+                                {{ pet.species }}
+                            </span>
+                        </td>
+                        <td>{{ pet.breed ?? 'Unknown' }}</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm me-2">
+                                    {% if pet.owner.userProfile and pet.owner.userProfile.photo %}
+                                        <img src="{{ pet.owner.userProfile.photo }}" alt="{{ pet.owner.username }}" class="rounded-circle" style="width: 32px; height: 32px;">
+                                    {% else %}
+                                        <div class="avatar-sm bg-secondary rounded-circle d-flex align-items-center justify-content-center">
+                                            <i class="bi bi-person text-white"></i>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    {{ pet.owner.displayName }}<br>
+                                    <small class="text-muted">{{ pet.owner.email }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            {% if pet.age %}
+                                {{ pet.age }} years<br>
+                                <small class="text-muted">{{ pet.lifeStage ?? 'Unknown' }}</small>
+                            {% else %}
+                                <span class="text-muted">Unknown</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if pet.isVaccinated %}
+                                <span class="badge bg-success me-1">Vaccinated</span>
+                            {% endif %}
+                            {% if pet.isNeutered %}
+                                <span class="badge bg-info">Neutered</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ pet.appointments|length }}</td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="{{ path('app_pet_show', {'id': pet.id}) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{{ path('app_pet_edit', {'id': pet.id}) }}" class="btn btn-sm btn-outline-warning">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ pet.id }}">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                            
+                            <!-- Delete Modal -->
+                            <div class="modal fade" id="deleteModal{{ pet.id }}" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Confirm Delete</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you want to delete <strong>{{ pet.name }}</strong>? This will also delete all associated appointments.
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <form action="{{ path('app_pet_delete', {'id': pet.id}) }}" method="post" class="d-inline">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ pet.id) }}">
+                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#petsTable').DataTable({
+                order: [[0, 'desc']],
+                pageLength: 25,
+                responsive: true,
+                columnDefs: [
+                    { orderable: false, targets: [1, 9] }
+                ]
+            });
+        });
+    </script>
+{% endblock %}

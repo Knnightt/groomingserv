@@ -1,0 +1,132 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Edit Appointment - #{{ appointment.id }}{% endblock %}
+
+{% block dashboard_content %}  
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0">Edit Appointment</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_scheduling_index') }}">Scheduling</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_scheduling_show', {'id': appointment.id}) }}">#{{ appointment.id }}</a></li>
+                <li class="breadcrumb-item active">Edit</li>
+            </ol>
+        </nav>
+    </div>
+    <div>
+        <a href="{{ path('app_scheduling_show', {'id': appointment.id}) }}" class="btn btn-outline-secondary me-2">
+            <i class="bi bi-eye me-1"></i> View
+        </a>
+        <a href="{{ path('app_scheduling_index') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to List
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Edit Appointment Details</h5>
+            </div>
+            <div class="card-body">
+                {{ form_start(form) }}
+                <div class="row">
+                    <!-- Customer & Pet -->
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.customer) }}
+                        {{ form_widget(form.customer, {'attr': {'class': 'form-select'}}) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.pet) }}
+                        {{ form_widget(form.pet, {'attr': {'class': 'form-select'}}) }}
+                    </div>
+                </div>
+
+                <!-- Service & Staff -->
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.service) }}
+                        {{ form_widget(form.service, {'attr': {'class': 'form-select'}}) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.assignedStaff) }}
+                        {{ form_widget(form.assignedStaff, {'attr': {'class': 'form-select'}}) }}
+                    </div>
+                </div>
+
+                <!-- Date & Time -->
+<div class="row">
+    <div class="col-md-6 mb-3">
+        {{ form_row(form.startAt) }}
+    </div>
+    <div class="col-md-6 mb-3">
+        {{ form_row(form.endAt) }}
+    </div>
+</div>
+
+                <!-- Price & Status -->
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        {{ form_label(form.amount) }}
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            {{ form_widget(form.amount, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        {{ form_label(form.discount) }}
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            {{ form_widget(form.discount, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        {{ form_label(form.status) }}
+                        {{ form_widget(form.status, {'attr': {'class': 'form-select'}}) }}
+                    </div>
+                </div>
+
+                <!-- Notes -->
+                <div class="mb-3">
+                    {{ form_label(form.notes) }}
+                    {{ form_widget(form.notes, {'attr': {'class': 'form-control', 'rows': 3}}) }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form_label(form.groomerNotes) }}
+                    {{ form_widget(form.groomerNotes, {'attr': {'class': 'form-control', 'rows': 3}}) }}
+                    <div class="form-text">Internal notes for groomer/staff</div>
+                </div>
+
+                <!-- Payment Information -->
+                <div class="row">
+                    <div class="col-12">
+                        <h6 class="border-bottom pb-2 mb-3">Payment Information</h6>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="form-check form-switch">
+                            {{ form_widget(form.isPaid, {'attr': {'class': 'form-check-input'}}) }}
+                            {{ form_label(form.isPaid, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.paymentMethod) }}
+                        {{ form_widget(form.paymentMethod, {'attr': {'class': 'form-select'}}) }}
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <a href="{{ path('app_scheduling_show', {'id': appointment.id}) }}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-1"></i> Save Changes
+                    </button>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

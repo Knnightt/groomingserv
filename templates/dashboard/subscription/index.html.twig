@@ -1,0 +1,214 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Subscription Management{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    {{ parent() }}
+{% endblock %}
+
+{% block dashboard_content %}  
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Subscription Management</h1>
+    <a href="{{ path('app_subscription_new') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i> Add New Subscription
+    </a>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card border-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-muted">Total Subscriptions</h6>
+                        <h3 class="mb-0">{{ subscriptions|length }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-credit-card text-primary fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-muted">Active</h6>
+                        <h3 class="mb-0">{{ active_subscriptions }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-check-circle-fill text-success fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-muted">Monthly Revenue</h6>
+                        <h3 class="mb-0">${{ monthly_revenue|number_format(2) }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-currency-dollar text-warning fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+    <div class="col-md-3">
+        <div class="card border-info">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-muted">Renewals This Month</h6>
+                        <h3 class="mb-0">{{ renewals_this_month }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-arrow-clockwise text-info fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Subscriptions Table -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">All Subscriptions</h5>
+        <div class="btn-group">
+            <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                <i class="bi bi-filter me-1"></i> Filter
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="?status=active">Active Only</a></li>
+                <li><a class="dropdown-item" href="?status=inactive">Inactive</a></li>
+                <li><a class="dropdown-item" href="?">Show All</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="subscriptionsTable" class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Customer</th>
+                        <th>Plan</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Renewal Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for subscription in subscriptions %}
+                    <tr>
+                        <td>{{ subscription.id }}</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm me-2">
+                                    {% if subscription.user.userProfile and subscription.user.userProfile.photo %}
+                                        <img src="{{ subscription.user.userProfile.photo }}" alt="{{ subscription.user.username }}" class="rounded-circle" style="width: 32px; height: 32px;">
+                                    {% else %}
+                                        <div class="avatar-sm bg-secondary rounded-circle d-flex align-items-center justify-content-center">
+                                            <i class="bi bi-person text-white"></i>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    {{ subscription.user.displayName }}<br>
+                                    <small class="text-muted">{{ subscription.user.email }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-{{ subscription.plan == 'Premium' ? 'warning' : subscription.plan == 'Ultimate' ? 'danger' : 'primary' }}">
+                                {{ subscription.plan }}
+                            </span>
+                        </td>
+                        <td>${{ subscription.amount|number_format(2) }}/mo</td>
+                        <td>
+                            {% if subscription.status == 'active' %}
+                                <span class="badge bg-success">Active</span>
+                            {% else %}
+                                <span class="badge bg-danger">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ subscription.startDate|date('Y-m-d') }}</td>
+                        <td>{{ subscription.endDate ? subscription.endDate|date('Y-m-d') : 'Auto-renew' }}</td>
+                        <td>
+                            {% if subscription.renewalDate %}
+                                {{ subscription.renewalDate|date('Y-m-d') }}<br>
+                                <small class="text-muted">{{ subscription.renewalDate|date('in d days') }}</small>
+                            {% else %}
+                                <span class="text-muted">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="{{ path('app_subscription_show', {'id': subscription.id}) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{{ path('app_subscription_edit', {'id': subscription.id}) }}" class="btn btn-sm btn-outline-warning">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ subscription.id }}">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                            
+                            <!-- Delete Modal -->
+                            <div class="modal fade" id="deleteModal{{ subscription.id }}" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Confirm Delete</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you want to delete this subscription? This action cannot be undone.
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <form action="{{ path('app_subscription_delete', {'id': subscription.id}) }}" method="post" class="d-inline">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ subscription.id) }}">
+                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#subscriptionsTable').DataTable({
+                order: [[0, 'desc']],
+                pageLength: 25,
+                responsive: true
+            });
+        });
+    </script>
+{% endblock %}

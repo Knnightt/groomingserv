@@ -1,0 +1,352 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Staff Details - {{ staff.displayName }}{% endblock %}
+
+{% block dashboard_content %}  
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0">Staff Details</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_staff_management_index') }}">Staff</a></li>
+                <li class="breadcrumb-item active">{{ staff.displayName }}</li>
+            </ol>
+        </nav>
+    </div>
+    <div>
+        <a href="{{ path('app_staff_management_edit', {'id': staff.id}) }}" class="btn btn-warning me-2">
+            <i class="bi bi-pencil me-1"></i> Edit
+        </a>
+        <a href="{{ path('app_staff_management_schedule', {'id': staff.id}) }}" class="btn btn-info me-2">
+            <i class="bi bi-calendar me-1"></i> Schedule
+        </a>
+        <a href="{{ path('app_staff_management_index') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to List
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Staff Profile -->
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                {% if staff.photo %}
+                    <img src="{{ staff.photo }}" alt="{{ staff.displayName }}" class="rounded-circle mb-3" style="width: 200px; height: 200px; object-fit: cover;">
+                {% else %}
+                    <div class="avatar-xl bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3">
+                        <i class="bi bi-person text-muted" style="font-size: 5rem;"></i>
+                    </div>
+                {% endif %}
+                <h3>{{ staff.displayName }}</h3>
+                <p class="text-muted">{{ staff.getRoleLabel() }}</p>
+                
+                <div class="d-flex justify-content-center gap-2 mb-3">
+                    <span class="badge bg-{{ staff.isActive() ? 'success' : 'danger' }}">
+                        {{ staff.employmentStatus }}
+                    </span>
+                    {% if staff.isCertified %}
+                        <span class="badge bg-info">Certified</span>
+                    {% endif %}
+                    {% if staff.canHandleAggressivePets %}
+                        <span class="badge bg-warning">Handles Aggressive Pets</span>
+                    {% endif %}
+                </div>
+                
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <span>Staff ID:</span>
+                            <strong>{{ staff.staffId }}</strong>
+                        </div>
+                    </div>
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <span>Hourly Rate:</span>
+                            <strong>${{ staff.hourlyRate|number_format(2) }}/hr</strong>
+                        </div>
+                    </div>
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <span>Experience:</span>
+                            <strong>{{ staff.experienceYears ?? '0' }} years</strong>
+                        </div>
+                    </div>
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <span>Hire Date:</span>
+                            <strong>{{ staff.hireDate|date('Y-m-d') }}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Working Hours -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="card-title mb-0">Working Schedule</h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <strong>Working Days:</strong><br>
+                    {% if staff.workingDays %}
+                        {% for day in staff.workingDays %}
+                            <span class="badge bg-light text-dark me-1">{{ day }}</span>
+                        {% endfor %}
+                    {% else %}
+                        <span class="text-muted">Not set</span>
+                    {% endif %}
+                </div>
+                <div class="mb-0">
+                    <strong>Working Hours:</strong><br>
+                    <span class="text-muted">{{ staff.getWorkingHours() }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">Quick Actions</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ path('app_staff_management_edit', {'id': staff.id}) }}" class="btn btn-outline-warning">
+                        <i class="bi bi-pencil me-2"></i> Edit Staff Info
+                    </a>
+                    <a href="{{ path('app_staff_management_schedule', {'id': staff.id}) }}" class="btn btn-outline-info">
+                        <i class="bi bi-calendar me-2"></i> Manage Schedule
+                    </a>
+                    <button class="btn btn-outline-{{ staff.isActive() ? 'danger' : 'success' }}" 
+                            onclick="toggleStaffStatus({{ staff.id }}, {{ staff.isActive() ? 'false' : 'true' }})">
+                        <i class="bi bi-power me-2"></i>
+                        {{ staff.isActive() ? 'Deactivate' : 'Activate' }} Staff
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Staff Details -->
+    <div class="col-lg-8">
+        <div class="row">
+            <!-- Professional Information -->
+            <div class="col-12 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Professional Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th width="40%">Role:</th>
+                                        <td>{{ staff.getRoleLabel() }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Certified:</th>
+                                        <td>
+                                            {% if staff.isCertified %}
+                                                <span class="badge bg-success">Yes</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">No</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Certifications:</th>
+                                        <td>{{ staff.certifications ?? 'None' }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th width="40%">Employment Status:</th>
+                                        <td>
+                                            <span class="badge bg-{{ staff.employmentStatus == 'Active' ? 'success' : staff.employmentStatus == 'On Leave' ? 'warning' : 'danger' }}">
+                                                {{ staff.employmentStatus }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Hire Date:</th>
+                                        <td>{{ staff.hireDate|date('Y-m-d') }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Termination Date:</th>
+                                        <td>{{ staff.terminationDate ? staff.terminationDate|date('Y-m-d') : 'N/A' }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        {% if staff.specializations %}
+                        <div class="mb-3">
+                            <strong>Specializations:</strong><br>
+                            {% for spec in staff.specializations %}
+                                <span class="badge bg-info me-1">{{ spec }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if staff.biography %}
+                        <div class="mt-3">
+                            <strong>Biography:</strong>
+                            <p class="text-muted">{{ staff.biography }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Account Info -->
+            {% if staff.user %}
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="card-title mb-0">User Account</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            {% if staff.user.userProfile and staff.user.userProfile.photo %}
+                                <img src="{{ staff.user.userProfile.photo }}" alt="{{ staff.user.username }}" class="rounded-circle me-3" style="width: 60px; height: 60px;">
+                            {% else %}
+                                <div class="avatar bg-secondary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
+                                    <i class="bi bi-person text-white" style="font-size: 2rem;"></i>
+                                </div>
+                            {% endif %}
+                            <div>
+                                <h5 class="mb-0">{{ staff.user.displayName }}</h5>
+                                <p class="text-muted mb-0">{{ staff.user.email }}</p>
+                            </div>
+                        </div>
+                        <table class="table table-sm table-borderless">
+                            <tr>
+                                <td width="50%">Username:</td>
+                                <td>{{ staff.user.username }}</td>
+                            </tr>
+                            <tr>
+                                <td>Account Status:</td>
+                                <td>
+                                    {% if staff.user.isActive %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Inactive</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Verified:</td>
+                                <td>
+                                    {% if staff.user.isVerified %}
+                                        <span class="badge bg-success">Yes</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">No</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Today's Appointments -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="card-title mb-0">Today's Appointments</h6>
+                    </div>
+                    <div class="card-body">
+                        {% if todays_appointments|length > 0 %}
+                            <div class="list-group list-group-flush">
+                                {% for appointment in todays_appointments %}
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>{{ appointment.pet.name }}</strong><br>
+                                            <small class="text-muted">{{ appointment.service.name }}</small>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="badge bg-{{ appointment.status == 'Completed' ? 'success' : appointment.status == 'Confirmed' ? 'info' : 'warning' }}">
+                                                {{ appointment.status }}
+                                            </span><br>
+                                            <small>{{ appointment.startAt|date('h:i A') }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-3">
+                                <i class="bi bi-calendar-x text-muted" style="font-size: 2rem;"></i>
+                                <p class="text-muted mt-2 mb-0">No appointments today</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Stats -->
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="card-title mb-0">Performance Statistics</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-md-3 mb-3">
+                                <div class="display-6 text-primary">{{ total_appointments }}</div>
+                                <small class="text-muted">Total Appointments</small>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="display-6 text-success">{{ completed_appointments }}</div>
+                                <small class="text-muted">Completed</small>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="display-6 text-warning">{{ avg_rating }}/5</div>
+                                <small class="text-muted">Avg Rating</small>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="display-6 text-info">${{ total_revenue|number_format(0) }}</div>
+                                <small class="text-muted">Revenue Generated</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        function toggleStaffStatus(staffId, newStatus) {
+            const action = newStatus ? 'activate' : 'deactivate';
+            if (confirm('Are you sure you want to ' + action + ' this staff member?')) {
+                fetch('/dashboard/staff/' + staffId + '/toggle-status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': '{{ csrf_token("toggle_staff") }}'
+                    },
+                    body: JSON.stringify({ isActive: newStatus })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                });
+            }
+        }
+    </script>
+{% endblock %}

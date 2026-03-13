@@ -1,0 +1,237 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Settings - Dashboard{% endblock %}
+
+{% block dashboard_content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-3">
+            <!-- Settings Navigation -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Settings</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{{ path('app_settings_index') }}" 
+                       class="list-group-item list-group-item-action {{ app.request.get('_route') == 'app_settings_index' ? 'active' : '' }}">
+                        <i class="bi bi-gear me-2"></i> Overview
+                    </a>
+                    <a href="{{ path('app_settings_profile') }}" 
+                       class="list-group-item list-group-item-action {{ app.request.get('_route') == 'app_settings_profile' ? 'active' : '' }}">
+                        <i class="bi bi-person me-2"></i> Profile
+                    </a>
+                    <a href="{{ path('app_settings_change_password') }}" 
+                       class="list-group-item list-group-item-action {{ app.request.get('_route') == 'app_settings_change_password' ? 'active' : '' }}">
+                        <i class="bi bi-key me-2"></i> Change Password
+                    </a>
+                    <a href="{{ path('app_settings_security') }}" 
+                       class="list-group-item list-group-item-action {{ app.request.get('_route') == 'app_settings_security' ? 'active' : '' }}">
+                        <i class="bi bi-shield-check me-2"></i> Security
+                    </a>
+                    {# <a href="{{ path('app_settings_billing') }}" 
+                       class="list-group-item list-group-item-action {{ app.request.get('_route') == 'app_settings_billing' ? 'active' : '' }}">
+                        <i class="bi bi-credit-card me-2"></i> Billing
+                    </a> #}
+                    <a href="{{ path('app_settings_delete_account') }}" 
+                       class="list-group-item list-group-item-action text-danger {{ app.request.get('_route') == 'app_settings_delete_account' ? 'active' : '' }}">
+                        <i class="bi bi-trash me-2"></i> Delete Account
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <!-- Settings Content -->
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Account Settings</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Profile Card -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="bg-primary rounded-circle p-3 me-3">
+                                            <i class="bi bi-person-fill text-white fs-4"></i>
+                                        </div>
+                                        <h5 class="mb-0">Profile Information</h5>
+                                    </div>
+                                    <p class="text-muted">Update your personal information and contact details.</p>
+                                    <a href="{{ path('app_settings_profile') }}" class="btn btn-outline-primary">
+                                        Edit Profile <i class="bi bi-arrow-right ms-1"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Password Card -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="bg-warning rounded-circle p-3 me-3">
+                                            <i class="bi bi-shield-lock-fill text-white fs-4"></i>
+                                        </div>
+                                        <h5 class="mb-0">Password & Security</h5>
+                                    </div>
+                                    <p class="text-muted">Change your password and manage security settings.</p>
+                                    <a href="{{ path('app_settings_change_password') }}" class="btn btn-outline-warning me-2">
+                                        Change Password
+                                    </a>
+                                    <a href="{{ path('app_settings_security') }}" class="btn btn-outline-secondary">
+                                        Security Logs
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Billing Card -->
+                        {# <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="bg-success rounded-circle p-3 me-3">
+                                            <i class="bi bi-credit-card-fill text-white fs-4"></i>
+                                        </div>
+                                        <h5 class="mb-0">Billing & Payments</h5>
+                                    </div>
+                                    <p class="text-muted">View billing history and manage payment methods.</p>
+                                    <a href="{{ path('app_settings_billing') }}" class="btn btn-outline-success">
+                                        View Billing <i class="bi bi-arrow-right ms-1"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div> #}
+                        
+                        <!-- Account Card -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100 border-danger">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="bg-danger rounded-circle p-3 me-3">
+                                            <i class="bi bi-exclamation-triangle-fill text-white fs-4"></i>
+                                        </div>
+                                        <h5 class="mb-0">Account Management</h5>
+                                    </div>
+                                    <p class="text-muted">Permanently delete your account and all associated data.</p>
+                                    <a href="{{ path('app_settings_delete_account') }}" class="btn btn-outline-danger">
+                                        Delete Account <i class="bi bi-arrow-right ms-1"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Account Information -->
+                    <div class="mt-4 pt-4 border-top">
+                        <h5 class="mb-3">Account Information</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <dl class="row">
+                                    <dt class="col-sm-4">Email</dt>
+                                    <dd class="col-sm-8">{{ user.email }}</dd>
+                                    
+                                    <dt class="col-sm-4">Username</dt>
+                                    <dd class="col-sm-8">{{ user.username }}</dd>
+                                    
+                                    <dt class="col-sm-4">Account Created</dt>
+                                    <dd class="col-sm-8">
+                                        {% if user.createdAt %}
+                                            {{ user.createdAt|date('F j, Y') }}
+                                        {% else %}
+                                            N/A
+                                        {% endif %}
+                                    </dd>
+                                    
+                                    <dt class="col-sm-4">Last Updated</dt>
+                                    <dd class="col-sm-8">
+                                        {% if user.updatedAt %}
+                                            {{ user.updatedAt|date('F j, Y \\a\\t g:i A') }}
+                                        {% else %}
+                                            Never updated
+                                        {% endif %}
+                                    </dd>
+                                </dl>
+                            </div>
+                            <div class="col-md-6">
+                                <dl class="row">
+                                    <dt class="col-sm-4">Display Name</dt>
+                                    <dd class="col-sm-8">{{ user.displayName }}</dd>
+                                    
+                                    <dt class="col-sm-4">Email Verified</dt>
+                                    <dd class="col-sm-8">
+                                        {% if user.isVerified %}
+                                            <span class="badge bg-success">Yes</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">No</span>
+                                        {% endif %}
+                                    </dd>
+                                    
+                                    <dt class="col-sm-4">Account Status</dt>
+                                    <dd class="col-sm-8">
+                                        {% if user.isActive %}
+                                            <span class="badge bg-success">Active</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Inactive</span>
+                                        {% endif %}
+                                    </dd>
+                                    
+                                    <dt class="col-sm-4">User Role</dt>
+                                    <dd class="col-sm-8">
+                                        {% if user.isAdmin %}
+                                            <span class="badge bg-danger">Administrator</span>
+                                        {% elseif user.isManager %}
+                                            <span class="badge bg-warning">Manager</span>
+                                        {% elseif user.isStaffMember %}
+                                            <span class="badge bg-info">Staff</span>
+                                        {% else %}
+                                            <span class="badge bg-primary">User</span>
+                                        {% endif %}
+                                        
+                                        {% if user.isStaff %}
+                                            <span class="badge bg-secondary ms-1">Staff Member</span>
+                                        {% endif %}
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                        
+                        <!-- Statistics -->
+                        <div class="row mt-4">
+                            <div class="col-md-4">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-body text-center">
+                                        <h3 class="text-primary">{{ user.pets|length }}</h3>
+                                        <p class="text-muted mb-0">Pets</p>
+                                        <small class="text-muted">Registered pets</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-body text-center">
+                                        <h3 class="text-success">{{ user.appointments|length }}</h3>
+                                        <p class="text-muted mb-0">Appointments</p>
+                                        <small class="text-muted">Total appointments</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-body text-center">
+                                        <h3 class="text-info">{{ user.subscriptions|length }}</h3>
+                                        <p class="text-muted mb-0">Subscriptions</p>
+                                        <small class="text-muted">Active subscriptions</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

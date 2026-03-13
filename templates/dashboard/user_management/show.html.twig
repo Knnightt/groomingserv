@@ -1,0 +1,244 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}User Details - {{ user.displayName }}{% endblock %}
+
+{% block dashboard_content %}  
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0">User Details</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_user_management_index') }}">User Management</a></li>
+                <li class="breadcrumb-item active">{{ user.displayName }}</li>
+            </ol>
+        </nav>
+    </div>
+    <div>
+        <a href="{{ path('app_user_management_edit', {'id': user.id}) }}" class="btn btn-warning me-2">
+            <i class="bi bi-pencil me-1"></i> Edit User
+        </a>
+        <a href="{{ path('app_user_management_index') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to List
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- User Profile Card -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                {% if user.userProfile and user.userProfile.photo %}
+                    <img src="{{ user.userProfile.photo }}" alt="Profile Photo" class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                {% else %}
+                    <div class="avatar-xl bg-secondary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3">
+                        <i class="bi bi-person text-white" style="font-size: 4rem;"></i>
+                    </div>
+                {% endif %}
+                <h4>{{ user.displayName }}</h4>
+                <p class="text-muted">{{ user.username }}</p>
+                
+                <div class="d-flex justify-content-center gap-2 mb-3">
+                    {% if 'ROLE_ADMIN' in user.roles %}
+                        <span class="badge bg-danger">Admin</span>
+                    {% elseif 'ROLE_MANAGER' in user.roles %}
+                        <span class="badge bg-warning">Manager</span>
+                    {% elseif 'ROLE_STAFF' in user.roles %}
+                        <span class="badge bg-info">Staff</span>
+                    {% else %}
+                        <span class="badge bg-secondary">User</span>
+                    {% endif %}
+                    
+                    {% if user.isActive %}
+                        <span class="badge bg-success">Active</span>
+                    {% else %}
+                        <span class="badge bg-danger">Inactive</span>
+                    {% endif %}
+                    
+                    {% if user.isVerified %}
+                        <span class="badge bg-info">Verified</span>
+                    {% endif %}
+                </div>
+                
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <span>Email:</span>
+                            <strong>{{ user.email }}</strong>
+                        </div>
+                    </div>
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <span>Registered:</span>
+                            <strong>{{ user.createdAt|date('F j, Y') }}</strong>
+                        </div>
+                    </div>
+                    {% if user.userProfile and user.userProfile.phoneNumber %}
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <span>Phone:</span>
+                            <strong>{{ user.userProfile.phoneNumber }}</strong>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Details -->
+    <div class="col-md-8">
+        <div class="row">
+            <!-- Account Information -->
+            <div class="col-12 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Account Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th width="40%">User ID:</th>
+                                        <td>{{ user.id }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Username:</th>
+                                        <td>{{ user.username }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Email Verified:</th>
+                                        <td>
+                                            {% if user.isVerified %}
+                                                <span class="badge bg-success">Yes</span>
+                                            {% else %}
+                                                <span class="badge bg-warning">No</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th width="40%">Last Updated:</th>
+                                        <td>{{ user.updatedAt ? user.updatedAt|date('Y-m-d H:i') : 'Never' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Account Status:</th>
+                                        <td>
+                                            {% if user.isActive %}
+                                                <span class="badge bg-success">Active</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">Suspended</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Roles:</th>
+                                        <td>
+                                            {% for role in user.roles %}
+                                                <span class="badge bg-info me-1">{{ role }}</span>
+                                            {% endfor %}
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Information -->
+            {% if user.userProfile %}
+            <div class="col-12 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Profile Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th width="40%">Full Name:</th>
+                                        <td>{{ user.userProfile.fullName }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Date of Birth:</th>
+                                        <td>{{ user.userProfile.dateOfBirth ? user.userProfile.dateOfBirth|date('Y-m-d') : 'Not set' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Gender:</th>
+                                        <td>{{ user.userProfile.gender ?? 'Not set' }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th width="40%">Phone:</th>
+                                        <td>{{ user.userProfile.phoneNumber ?? 'Not set' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Address:</th>
+                                        <td>
+                                            {% if user.userProfile.getFormattedAddress %}
+                                                {{ user.userProfile.getFormattedAddress }}
+                                            {% else %}
+                                                Not set
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        {% if user.userProfile.bio %}
+                        <div class="mt-3">
+                            <h6>Bio:</h6>
+                            <p class="text-muted">{{ user.userProfile.bio }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- User Stats -->
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <i class="bi bi-paw text-primary fs-1 mb-2"></i>
+                                <h3>{{ user.pets|length }}</h3>
+                                <p class="text-muted mb-0">Pets</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <i class="bi bi-calendar-check text-success fs-1 mb-2"></i>
+                                <h3>{{ user.appointments|length }}</h3>
+                                <p class="text-muted mb-0">Appointments</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <i class="bi bi-credit-card text-warning fs-1 mb-2"></i>
+                                <h3>{{ user.subscriptions|length }}</h3>
+                                <p class="text-muted mb-0">Subscriptions</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

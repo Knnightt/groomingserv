@@ -1,0 +1,136 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Login - Quibot's Grooming{% endblock %}
+
+{% block auth_css %}
+    <link href="{{ asset('css/auth.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block navigation %}{% endblock %}
+
+{% block body %}
+<div class="auth-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="auth-card">
+                    <div class="row g-0">
+                        <!-- Left Side - Welcome Message -->
+                        <div class="col-lg-6 d-none d-lg-block">
+                            <div class="auth-left">
+                                <h2>Welcome back!</h2>
+                                <p>We're excited to see you again. Access your account to manage appointments, view your pets, and more.</p>
+                                
+                                <div class="testimonial">
+                                    <p>"Quibot Grooming services has transformed how I care for my pets. The booking is seamless and the staff is incredible."</p>
+                                    <div class="testimonial-author">
+                                        <div class="author-avatar">K</div>
+                                        <div class="author-info">
+                                            <strong>Kori Quibot</strong>
+                                            <span class="small">Long-time Customer</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Right Side - Login Form -->
+                        <div class="col-lg-6">
+                            <div class="auth-right">
+                                <div class="auth-header">
+                                    <h1>Welcome back</h1>
+                                    <p>Enter your details to access your account</p>
+                                </div>
+                                
+                                {% if error %}
+                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                        {{ error.messageKey|trans(error.messageData, 'security') }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                {% endif %}
+                                
+                                <div class="auth-form">
+                                    <form method="post" class="needs-validation" novalidate>
+                                        <div class="mb-4">
+                                            <label for="inputEmail" class="form-label fw-semibold">Email</label>
+                                            <input 
+                                                type="email" 
+                                                value="{{ last_username }}" 
+                                                name="email" 
+                                                id="inputEmail" 
+                                                class="form-control" 
+                                                autocomplete="email" 
+                                                required 
+                                                autofocus
+                                                placeholder="Enter your email"
+                                            >
+                                        </div>
+                                        
+                                        <div class="mb-4">
+                                            <label for="inputPassword" class="form-label fw-semibold">Password</label>
+                                            <div class="input-group">
+                                                <input 
+                                                    type="password" 
+                                                    name="password" 
+                                                    id="inputPassword" 
+                                                    class="form-control" 
+                                                    autocomplete="current-password" 
+                                                    required
+                                                    placeholder="Enter your password"
+                                                >
+                                                <button class="btn btn-outline-secondary password-toggle" type="button">
+                                                    <i class="bi bi-eye"></i>
+                                                </button>
+                                            </div>
+                                            <div class="forgot-password">
+                                                <a href="#">Forgot password?</a>
+                                            </div>
+                                        </div>
+                                        
+                                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                                        
+                                        <div class="form-check mb-4">
+                                            <input type="checkbox" class="form-check-input" id="remember_me" name="_remember_me">
+                                            <label class="form-check-label" for="remember_me">Remember me</label>
+                                        </div>
+                                        
+                                        <div class="d-grid gap-2">
+                                            <button class="btn btn-primary btn-lg" type="submit">
+                                                Sign In
+                                            </button>
+                                        </div>
+                                    </form>
+                                    
+                                    <div class="auth-divider">
+                                        <span>OR CONTINUE WITH</span>
+                                    </div>
+                                    
+                                    <div class="social-login">
+                                        <a href="#" class="social-btn google">
+                                            <i class="bi bi-google"></i>
+                                            <span>Google</span>
+                                        </a>
+                                        <a href="#" class="social-btn facebook">
+                                            <i class="bi bi-facebook"></i>
+                                            <span>Facebook</span>
+                                        </a>
+                                    </div>
+                                    
+                                    <div class="auth-footer">
+                                        Don't have an account? 
+                                        <a href="{{ path('app_register') }}">Sign up</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block auth_js %}
+    <script src="{{ asset('js/auth.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,287 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Appointment Scheduling{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    {{ parent() }}
+{% endblock %}
+{% block dashboard_content %}  
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Appointment Scheduling</h1>
+    <div>
+        <a href="{{ path('app_scheduling_calendar') }}" class="btn btn-outline-primary me-2">
+            <i class="bi bi-calendar-week me-1"></i> Calendar View
+        </a>
+        <a href="{{ path('app_scheduling_new') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i> New Appointment
+        </a>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card border-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-muted">Today's Appointments</h6>
+                        <h3 class="mb-0">{{ today_appointments }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-calendar-day text-primary fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-muted">Pending</h6>
+                        <h3 class="mb-0">{{ pending_appointments }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-clock text-success fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-muted">This Week</h6>
+                        <h3 class="mb-0">{{ this_week_appointments }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-calendar-week text-warning fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-info">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-muted">Revenue Today</h6>
+                        <h3 class="mb-0">${{ today_revenue|number_format(2) }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-currency-dollar text-info fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Date Range</label>
+                <input type="date" class="form-control" name="start_date" value="{{ start_date }}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">&nbsp;</label>
+                <input type="date" class="form-control" name="end_date" value="{{ end_date }}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Status</label>
+                <select class="form-select" name="status">
+                    <option value="">All Status</option>
+                    <option value="Pending" {{ status == 'Pending' ? 'selected' : '' }}>Pending</option>
+                    <option value="Confirmed" {{ status == 'Confirmed' ? 'selected' : '' }}>Confirmed</option>
+                    <option value="Completed" {{ status == 'Completed' ? 'selected' : '' }}>Completed</option>
+                    <option value="Cancelled" {{ status == 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">&nbsp;</label>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Appointments Table -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">All Appointments</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="appointmentsTable" class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date & Time</th>
+                        <th>Customer</th>
+                        <th>Pet</th>
+                        <th>Service</th>
+                        <th>Staff</th>
+                        <th>Status</th>
+                        <th>Amount</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appointment in appointments %}
+                    <tr>
+                        <td>{{ appointment.id }}</td>
+                        <td>
+                            <strong>{{ appointment.startAt|date('M d, Y') }}</strong><br>
+                            <small class="text-muted">{{ appointment.startAt|date('h:i A') }} - {{ appointment.endAt|date('h:i A') }}</small>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm me-2">
+                                    {% if appointment.customer.userProfile and appointment.customer.userProfile.photo %}
+                                        <img src="{{ appointment.customer.userProfile.photo }}" alt="{{ appointment.customer.username }}" class="rounded-circle" style="width: 32px; height: 32px;">
+                                    {% else %}
+                                        <div class="avatar-sm bg-secondary rounded-circle d-flex align-items-center justify-content-center">
+                                            <i class="bi bi-person text-white"></i>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    {{ appointment.customer.displayName }}<br>
+                                   <small class="text-muted">{{ appointment.customer.userProfile.phoneNumber ?? 'No phone' }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            {% if appointment.pet.photo %}
+                                <img src="{{ appointment.pet.photo }}" alt="{{ appointment.pet.name }}" class="rounded me-2" style="width: 32px; height: 32px;">
+                            {% endif %}
+                            {{ appointment.pet.name }}
+                        </td>
+                        <td>{{ appointment.service.name }}</td>
+                        <td>
+                            {% if appointment.assignedStaff %}
+                                {{ appointment.assignedStaff.displayName }}
+                            {% else %}
+                                <span class="text-muted">Unassigned</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if appointment.status == 'Pending' %}
+                                <span class="badge bg-warning">Pending</span>
+                            {% elseif appointment.status == 'Confirmed' %}
+                                <span class="badge bg-info">Confirmed</span>
+                            {% elseif appointment.status == 'Completed' %}
+                                <span class="badge bg-success">Completed</span>
+                            {% elseif appointment.status == 'Cancelled' %}
+                                <span class="badge bg-danger">Cancelled</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            ${{ appointment.amount|number_format(2) }}<br>
+                            {% if appointment.isPaid %}
+                                <small class="text-success">Paid</small>
+                            {% else %}
+                                <small class="text-danger">Unpaid</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="{{ path('app_scheduling_show', {'id': appointment.id}) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{{ path('app_scheduling_edit', {'id': appointment.id}) }}" class="btn btn-sm btn-outline-warning">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                        <i class="bi bi-gear"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        {% if appointment.status == 'Pending' %}
+                                        <li><a class="dropdown-item" href="#" onclick="updateStatus({{ appointment.id }}, 'Confirmed')">
+                                            <i class="bi bi-check-circle me-2"></i>Confirm
+                                        </a></li>
+                                        {% endif %}
+                                        {% if appointment.status == 'Confirmed' %}
+                                        <li><a class="dropdown-item" href="#" onclick="updateStatus({{ appointment.id }}, 'Completed')">
+                                            <i class="bi bi-check-all me-2"></i>Complete
+                                        </a></li>
+                                        {% endif %}
+                                        <li><a class="dropdown-item" href="#" onclick="updateStatus({{ appointment.id }}, 'Cancelled')">
+                                            <i class="bi bi-x-circle me-2"></i>Cancel
+                                        </a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" href="#" onclick="sendReminder({{ appointment.id }})">
+                                            <i class="bi bi-bell me-2"></i>Send Reminder
+                                        </a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#appointmentsTable').DataTable({
+                order: [[1, 'desc']],
+                pageLength: 25,
+                responsive: true
+            });
+        });
+
+        function updateStatus(appointmentId, newStatus) {
+            if (confirm('Change appointment status to "' + newStatus + '"?')) {
+                fetch('/dashboard/scheduling/' + appointmentId + '/update-status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': '{{ csrf_token("update_status") }}'
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    }
+                });
+            }
+        }
+
+        function sendReminder(appointmentId) {
+            fetch('/dashboard/scheduling/' + appointmentId + '/send-reminder', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-Token': '{{ csrf_token("send_reminder") }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Reminder sent successfully!');
+                }
+            });
+        }
+    </script>
+{% endblock %}

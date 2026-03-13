@@ -1,0 +1,208 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Edit User - {{ user.displayName }}{% endblock %}
+
+{% block dashboard_content %}  
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0">Edit User</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_user_management_index') }}">User Management</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_user_management_show', {'id': user.id}) }}">{{ user.displayName }}</a></li>
+                <li class="breadcrumb-item active">Edit</li>
+            </ol>
+        </nav>
+    </div>
+    <div>
+        <a href="{{ path('app_user_management_show', {'id': user.id}) }}" class="btn btn-outline-secondary me-2">
+            <i class="bi bi-eye me-1"></i> View
+        </a>
+        <a href="{{ path('app_user_management_index') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to List
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Edit User Information</h5>
+            </div>
+            <div class="card-body">
+                {{ form_start(form) }}
+                <div class="row">
+                    <!-- Basic Information -->
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.email) }}
+                        {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+                        <div class="form-text">User's email address</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.username) }}
+                        {{ form_widget(form.username, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.roles) }}
+                        {{ form_widget(form.roles, {'attr': {'class': 'form-select'}}) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Password</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" placeholder="Leave blank to keep current" disabled>
+                            <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal" data-bs-target="#passwordModal">
+                                Change
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Information -->
+                <div class="row">
+                    <div class="col-12">
+                        <h6 class="border-bottom pb-2 mb-3">Profile Information</h6>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.fullName) }}
+                        {{ form_widget(form.fullName, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.phoneNumber) }}
+                        {{ form_widget(form.phoneNumber, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.gender) }}
+                        {{ form_widget(form.gender, {'attr': {'class': 'form-select'}}) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.dateOfBirth) }}
+                        {{ form_widget(form.dateOfBirth, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col-12 mb-3">
+                        {{ form_label(form.address) }}
+                        {{ form_widget(form.address, {'attr': {'class': 'form-control', 'rows': 2}}) }}
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        {{ form_label(form.city) }}
+                        {{ form_widget(form.city, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        {{ form_label(form.state) }}
+                        {{ form_widget(form.state, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        {{ form_label(form.zipCode) }}
+                        {{ form_widget(form.zipCode, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.country) }}
+                        {{ form_widget(form.country, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col-12 mb-3">
+                        {{ form_label(form.bio) }}
+                        {{ form_widget(form.bio, {'attr': {'class': 'form-control', 'rows': 3}}) }}
+                    </div>
+                </div>
+
+                <!-- Account Status -->
+                <div class="row">
+                    <div class="col-12">
+                        <h6 class="border-bottom pb-2 mb-3">Account Settings</h6>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="form-check form-switch">
+                            {{ form_widget(form.isActive, {'attr': {'class': 'form-check-input'}}) }}
+                            {{ form_label(form.isActive, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="form-check form-switch">
+                            {{ form_widget(form.isVerified, {'attr': {'class': 'form-check-input'}}) }}
+                            {{ form_label(form.isVerified, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <a href="{{ path('app_user_management_show', {'id': user.id}) }}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-1"></i> Save Changes
+                    </button>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Password Change Modal -->
+<div class="modal fade" id="passwordModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Change Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="passwordForm">
+                    <div class="mb-3">
+                        <label for="newPassword" class="form-label">New Password</label>
+                        <input type="password" class="form-control" id="newPassword" name="newPassword" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="changePassword({{ user.id }})">Change Password</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        function changePassword(userId) {
+            const newPassword = $('#newPassword').val();
+            const confirmPassword = $('#confirmPassword').val();
+            
+            if (newPassword !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                alert('Password must be at least 6 characters long!');
+                return;
+            }
+            
+            fetch('/dashboard/users/' + userId + '/change-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': '{{ csrf_token("change_password") }}'
+                },
+                body: JSON.stringify({ newPassword: newPassword })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Password changed successfully!');
+                    $('#passwordModal').modal('hide');
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            });
+        }
+    </script>
+{% endblock %}

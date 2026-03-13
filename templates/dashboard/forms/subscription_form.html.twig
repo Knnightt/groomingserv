@@ -1,0 +1,148 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% from 'dashboard/components/form_layout.html.twig' import form_header, form_actions %}
+
+{% block title %}{{ subscription.id ? 'Edit' : 'New' }} Subscription - Dashboard{% endblock %}
+
+{% block dashboard_content %}  
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                {{ form_header(
+                    (subscription.id ? 'Edit Subscription' : 'Create New Subscription'),
+                    (subscription.id ? 'Update subscription details' : 'Add a new subscription plan for a user')
+                ) }}
+                
+                <div class="card-body">
+                    {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form_row(form.user) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.plan) }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            {{ form_row(form.amount) }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form_row(form.status) }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form_row(form.startDate) }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form_row(form.endDate) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.renewalDate) }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form_row(form.stripeCustomerId) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.stripeSubscriptionId) }}
+                        </div>
+                    </div>
+                    
+                    {{ form_actions(
+                        'app_subscription_delete',
+                        subscription.id,
+                        subscription.id and is_granted('ROLE_ADMIN')
+                    ) }}
+                    
+                    {{ form_end(form) }}
+                </div>
+            </div>
+            
+            {% if subscription.id %}
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">Subscription Details</h5>
+                        </div>
+                        <div class="card-body">
+                            <dl class="row mb-0">
+                                <dt class="col-sm-4">Current Status:</dt>
+                                <dd class="col-sm-8">
+                                    <span class="badge bg-{{ subscription.isActive() ? 'success' : 'danger' }}">
+                                        {{ subscription.status|capitalize }}
+                                    </span>
+                                </dd>
+                                
+                                <dt class="col-sm-4">Created:</dt>
+                                <dd class="col-sm-8">{{ subscription.createdAt|date('M d, Y') }}</dd>
+                                
+                                <dt class="col-sm-4">Last Updated:</dt>
+                                <dd class="col-sm-8">
+                                    {% if subscription.updatedAt %}
+                                        {{ subscription.updatedAt|date('M d, Y') }}
+                                    {% else %}
+                                        Never
+                                    {% endif %}
+                                </dd>
+                                
+                                <dt class="col-sm-4">Days Remaining:</dt>
+                                <dd class="col-sm-8">
+                                    {% if subscription.endDate %}
+                                        {% set remaining = date(subscription.endDate).diff(date('now')).days %}
+                                        {{ remaining > 0 ? remaining : 'Expired' }}
+                                    {% else %}
+                                        No end date set
+                                    {% endif %}
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">Quick Actions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                {% if subscription.status != 'active' %}
+                                    <form method="post" action="{{ path('app_subscription_activate', {'id': subscription.id}) }}">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('activate' ~ subscription.id) }}">
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="bi bi-check-circle me-1"></i>Activate Subscription
+                                        </button>
+                                    </form>
+                                {% endif %}
+                                
+                                {% if subscription.status == 'active' %}
+                                    <form method="post" action="{{ path('app_subscription_cancel', {'id': subscription.id}) }}">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('cancel' ~ subscription.id) }}">
+                                        <button type="submit" class="btn btn-warning">
+                                            <i class="bi bi-x-circle me-1"></i>Cancel Subscription
+                                        </button>
+                                    </form>
+                                {% endif %}
+                                
+                                <a href="{{ path('app_subscription_show', {'id': subscription.id}) }}" class="btn btn-outline-primary">
+                                    <i class="bi bi-eye me-1"></i>View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

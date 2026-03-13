@@ -1,0 +1,145 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% from 'dashboard/components/form_layout.html.twig' import form_header, form_actions %}
+
+{% block title %}{{ pet.id ? 'Edit' : 'New' }} Pet - Dashboard{% endblock %}
+
+{% block dashboard_content %}  
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 col-lg-8">
+            <div class="card">
+                {{ form_header(
+                    (pet.id ? 'Edit Pet' : 'Add New Pet'),
+                    (pet.id ? 'Update your pet\'s information' : 'Add a new pet to your profile')
+                ) }}
+                
+                <div class="card-body">
+                    {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form_row(form.name) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.species) }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form_row(form.breed) }}
+                        </div>
+                        <div class="col-md-3">
+                            {{ form_row(form.age) }}
+                        </div>
+                        <div class="col-md-3">
+                            {{ form_row(form.gender) }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form_row(form.weight) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.lifeStage) }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form_row(form.coatType) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.temperament) }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-check mb-3">
+                                {{ form_row(form.isNeutered) }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check mb-3">
+                                {{ form_row(form.isVaccinated) }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {{ form_row(form.photo) }}
+                    
+                    {{ form_row(form.allergies) }}
+                    
+                    {{ form_row(form.medicalNotes) }}
+                    
+                    {{ form_actions(
+                        'app_pet_delete',
+                        pet.id,
+                        pet.id and (app.user == pet.owner or is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER'))
+                    ) }}
+                    
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-12 col-lg-4 mt-4 mt-lg-0">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Pet Photo</h5>
+                </div>
+                <div class="card-body text-center">
+                    {% if form.photo.vars.value %}
+                        <img src="{{ form.photo.vars.value }}" alt="Pet Photo" 
+                             class="rounded mb-3" style="width: 100%; max-height: 200px; object-fit: cover;">
+                    {% else %}
+                        <div class="bg-light d-flex align-items-center justify-content-center rounded mb-3" 
+                             style="width: 100%; height: 200px;">
+                            <i class="bi bi-image" style="font-size: 3rem; color: #ccc;"></i>
+                        </div>
+                    {% endif %}
+                    <p class="text-muted small">Enter a URL for your pet's photo. We recommend using a clear image that shows your pet's features.</p>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Important Notes</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0 small">
+                        <li>Provide accurate medical information for safe grooming</li>
+                        <li>Update vaccination status regularly</li>
+                        <li>List all known allergies to prevent reactions</li>
+                        <li>Note any behavioral concerns for staff safety</li>
+                        <li>Keep contact information up to date</li>
+                    </ul>
+                </div>
+            </div>
+            
+            {% if pet.id %}
+            <div class="card mt-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Pet Information</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0 small">
+                        <dt class="col-sm-5">Owner:</dt>
+                        <dd class="col-sm-7">{{ pet.owner.displayName }}</dd>
+                        
+                        <dt class="col-sm-5">Created:</dt>
+                        <dd class="col-sm-7">{{ pet.createdAt|date('M d, Y') }}</dd>
+                        
+                        <dt class="col-sm-5">Appointments:</dt>
+                        <dd class="col-sm-7">{{ pet.appointments|length }}</dd>
+                    </dl>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

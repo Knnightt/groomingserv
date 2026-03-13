@@ -1,0 +1,161 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Notification Settings{% endblock %}
+
+{% block dashboard_content %}  
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0">Notification Settings</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_settings_index') }}">Settings</a></li>
+                <li class="breadcrumb-item active">Notifications</li>
+            </ol>
+        </nav>
+    </div>
+    <a href="{{ path('app_settings_index') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Back to Settings
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Manage Notifications</h5>
+            </div>
+            <div class="card-body">
+                {{ form_start(form) }}
+                
+                <!-- Email Notifications -->
+                <div class="mb-4">
+                    <h6 class="border-bottom pb-2 mb-3">Email Notifications</h6>
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            {{ form_widget(form.emailNotifications, {'attr': {'class': 'form-check-input'}}) }}
+                            {{ form_label(form.emailNotifications, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                {{ form_widget(form.appointmentReminders, {'attr': {'class': 'form-check-input'}}) }}
+                                {{ form_label(form.appointmentReminders, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                {{ form_widget(form.paymentReceipts, {'attr': {'class': 'form-check-input'}}) }}
+                                {{ form_label(form.paymentReceipts, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                {{ form_widget(form.newsletter, {'attr': {'class': 'form-check-input'}}) }}
+                                {{ form_label(form.newsletter, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                {{ form_widget(form.promotionalEmails, {'attr': {'class': 'form-check-input'}}) }}
+                                {{ form_label(form.promotionalEmails, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Push Notifications -->
+                <div class="mb-4">
+                    <h6 class="border-bottom pb-2 mb-3">Push Notifications</h6>
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            {{ form_widget(form.pushNotifications, {'attr': {'class': 'form-check-input'}}) }}
+                            {{ form_label(form.pushNotifications, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                {{ form_widget(form.newAppointments, {'attr': {'class': 'form-check-input'}}) }}
+                                {{ form_label(form.newAppointments, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                {{ form_widget(form.appointmentUpdates, {'attr': {'class': 'form-check-input'}}) }}
+                                {{ form_label(form.appointmentUpdates, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                {{ form_widget(form.paymentAlerts, {'attr': {'class': 'form-check-input'}}) }}
+                                {{ form_label(form.paymentAlerts, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                {{ form_widget(form.systemAlerts, {'attr': {'class': 'form-check-input'}}) }}
+                                {{ form_label(form.systemAlerts, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SMS Notifications -->
+                <div class="mb-4">
+                    <h6 class="border-bottom pb-2 mb-3">SMS Notifications</h6>
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            {{ form_widget(form.smsNotifications, {'attr': {'class': 'form-check-input'}}) }}
+                            {{ form_label(form.smsNotifications, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                        </div>
+                        <div class="form-text">Standard messaging rates may apply</div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                {{ form_widget(form.smsReminders, {'attr': {'class': 'form-check-input'}}) }}
+                                {{ form_label(form.smsReminders, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                {{ form_widget(form.smsUpdates, {'attr': {'class': 'form-check-input'}}) }}
+                                {{ form_label(form.smsUpdates, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notification Frequency -->
+                <div class="mb-4">
+                    <h6 class="border-bottom pb-2 mb-3">Notification Frequency</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(form.appointmentReminderTime) }}
+                            {{ form_widget(form.appointmentReminderTime, {'attr': {'class': 'form-select'}}) }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(form.dailySummary) }}
+                            {{ form_widget(form.dailySummary, {'attr': {'class': 'form-check-input'}}) }}
+                            {{ form_label(form.dailySummary, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <a href="{{ path('app_settings_index') }}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-1"></i> Save Settings
+                    </button>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

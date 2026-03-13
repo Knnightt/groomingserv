@@ -1,0 +1,83 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% from 'dashboard/components/form_layout.html.twig' import form_header, form_actions, form_errors %}
+
+{% block title %}{{ user.id ? 'Edit' : 'New' }} User - Dashboard{% endblock %}
+
+{% block dashboard_content %}  
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                {{ form_header(
+                    (user.id ? 'Edit User' : 'Create New User'),
+                    (user.id ? 'Update user information' : 'Add a new user to the system')
+                ) }}
+                
+                <div class="card-body">
+                    {{ form_errors(form) }}
+                    
+                    {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form_row(form.email) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.username) }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form_row(form.roles) }}
+                        </div>
+                        <div class="col-md-3">
+                            {{ form_row(form.isActive) }}
+                        </div>
+                        <div class="col-md-3">
+                            {{ form_row(form.isVerified) }}
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h5 class="mb-3">User Profile</h5>
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            User profile information can be managed separately in the user's profile settings.
+                        </div>
+                    </div>
+                    
+                    {{ form_actions(
+                        'app_user_management_delete',
+                        user.id,
+                        user.id and not (app.user.id == user.id)
+                    ) }}
+                    
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize form validation
+    const forms = document.querySelectorAll('.needs-validation');
+    
+    Array.from(forms).forEach(form => {
+        form.addEventListener('submit', event => {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            
+            form.classList.add('was-validated');
+        }, false);
+    });
+});
+</script>
+{% endblock %}

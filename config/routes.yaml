@@ -1,11 +1,12 @@
-# yaml-language-server: $schema=../vendor/symfony/routing/Loader/schema/routing.schema.json
+# config/routes.yaml
 
-# This file is the entry point to configure the routes of your app.
-# Methods with the #[Route] attribute are automatically imported.
-# See also https://symfony.com/doc/current/routing.html
-
-# To list all registered routes, run the following command:
-#   bin/console debug:router
-
+# Home page route should be handled by annotations/attributes in controller
+# Make sure controllers are imported
 controllers:
-    resource: routing.controllers
+    resource: ../src/Controller/
+    type: attribute
+
+# Or if you want to explicitly define it:
+# app_home:
+#     path: /
+#     controller: App\Controller\HomeController::index

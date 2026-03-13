@@ -1,0 +1,511 @@
+/* Custom Styles for Quibot's Grooming */
+
+:root {
+    --primary-color: #4a6fa5;
+    --secondary-color: #f8b400;
+    --accent-color: #ff6b6b;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+    --success-color: #28a745;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+}
+
+/* Header and Hero */
+.hero-section {
+    background: linear-gradient(rgba(74, 111, 165, 0.9), rgba(74, 111, 165, 0.8)), 
+                url('https://images.unsplash.com/photo-1591946614720-90a587da4a36?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 100px 0;
+    text-align: center;
+}
+
+.hero-section h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.hero-section .lead {
+    font-size: 1.5rem;
+    margin-bottom: 30px;
+}
+
+/* Services Section */
+.services-section {
+    padding: 80px 0;
+    background-color: var(--light-color);
+}
+
+.service-icon {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+    height: 100%;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+}
+
+/* Vision Section */
+.vision-section {
+    padding: 80px 0;
+    background: linear-gradient(135deg, var(--primary-color) 0%, #6c8dc0 100%);
+    color: white;
+}
+
+.vision-point {
+    text-align: center;
+    padding: 20px;
+}
+
+.vision-icon {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    color: var(--secondary-color);
+}
+
+/* Pricing Section */
+.pricing-section {
+    padding: 80px 0;
+    background-color: #f8f9fa;
+}
+
+.pricing-card {
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.pricing-card.featured {
+    border-color: var(--secondary-color);
+    transform: scale(1.05);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.price-tag {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.pricing-feature {
+    margin-bottom: 8px;
+    color: #666;
+}
+
+/* Testimonials */
+.testimonials-section {
+    padding: 80px 0;
+    background-color: var(--light-color);
+}
+
+.testimonial-card {
+    background: white;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    height: 100%;
+}
+
+.star-rating {
+    color: var(--secondary-color);
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+}
+
+/* CTA Section */
+.cta-section {
+    padding: 80px 0;
+    background: linear-gradient(135deg, var(--secondary-color) 0%, #ffcc00 100%);
+    color: white;
+}
+
+.cta-section h2 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+/* Footer */
+.footer {
+    background-color: var(--dark-color);
+    color: white;
+    padding: 60px 0 20px;
+}
+
+.footer h5 {
+    color: var(--secondary-color);
+    margin-bottom: 20px;
+}
+
+.footer a {
+    color: #ccc;
+    text-decoration: none;
+}
+
+.footer a:hover {
+    color: white;
+}
+
+.social-icons a {
+    font-size: 1.5rem;
+    margin-right: 15px;
+    color: #ccc;
+}
+
+.social-icons a:hover {
+    color: var(--secondary-color);
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    padding: 12px 30px;
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    background-color: #3a5a8a;
+    border-color: #3a5a8a;
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    color: white;
+    padding: 12px 30px;
+    font-weight: 600;
+}
+
+.btn-secondary:hover {
+    background-color: #e0a400;
+    border-color: #e0a400;
+    color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-section h1 {
+        font-size: 2.5rem;
+    }
+    
+    .hero-section .lead {
+        font-size: 1.2rem;
+    }
+    
+    .pricing-card.featured {
+        transform: none;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+}
+
+/* ====================
+   AUTHENTICATION STYLES
+   ==================== */
+
+.auth-container {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    padding: 4rem 0;
+}
+
+.auth-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    border: none;
+}
+
+.auth-left {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #6c8dc0 100%);
+    color: white;
+    padding: 4rem 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.auth-left h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+}
+
+.auth-left p {
+    font-size: 1.1rem;
+    opacity: 0.95;
+    line-height: 1.6;
+}
+
+.testimonial {
+    margin-top: 3rem;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    border-left: 4px solid var(--secondary-color);
+}
+
+.testimonial p {
+    font-style: italic;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+}
+
+.testimonial-author {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.author-avatar {
+    width: 45px;
+    height: 45px;
+    background: var(--secondary-color);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.author-info strong {
+    display: block;
+    font-weight: 600;
+}
+
+.author-info .small {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+/* Right Side - Form */
+.auth-right {
+    padding: 4rem 3rem;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.auth-header h1 {
+    font-size: 2.2rem;
+    color: var(--dark-color);
+    margin-bottom: 0.75rem;
+    font-weight: 700;
+}
+
+.auth-header p {
+    color: #666;
+    font-size: 1.1rem;
+}
+
+/* Form Elements */
+.auth-form .form-label {
+    font-weight: 600;
+    color: var(--dark-color);
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.auth-form .form-control {
+    padding: 0.85rem 1rem;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.auth-form .form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(74, 111, 165, 0.25);
+}
+
+.auth-form .input-group .form-control {
+    border-right: none;
+}
+
+.auth-form .input-group-text {
+    background: white;
+    border: 2px solid #e9ecef;
+    border-left: none;
+    cursor: pointer;
+}
+
+.auth-form .form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.auth-form .form-check-label {
+    color: #666;
+    font-size: 0.95rem;
+}
+
+/* Divider */
+.auth-divider {
+    display: flex;
+    align-items: center;
+    margin: 2.5rem 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid var(--auth-border);
+}
+
+.auth-divider span {
+    padding: 0 1rem;
+}
+
+/* Social Buttons */
+.social-login {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+}
+
+.social-btn {
+    flex: 1;
+    padding: 0.85rem;
+    border: 2px solid var(--auth-border);
+    border-radius: 8px;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    color: var(--dark-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.social-btn:hover {
+    background: var(--auth-light);
+    border-color: #ccc;
+    transform: translateY(-2px);
+    text-decoration: none;
+    color: var(--dark-color);
+}
+
+.social-btn i {
+    font-size: 1.2rem;
+}
+
+/* Auth Footer */
+.auth-footer {
+    text-align: center;
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--auth-border);
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.auth-footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    margin-left: 0.5rem;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+/* Forgot Password */
+.forgot-password {
+    text-align: right;
+    margin-top: 0.5rem;
+}
+
+.forgot-password a {
+    color: #666;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.forgot-password a:hover {
+    color: var(--primary-color);
+    text-decoration: underline;
+}
+
+/* Error Messages */
+.auth-form .alert {
+    border-radius: 8px;
+    border: none;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Primary Button */
+.auth-form .btn-primary {
+    padding: 0.85rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    transition: all 0.3s ease;
+}
+
+.auth-form .btn-primary:hover {
+    background-color: #3a5a8a;
+    border-color: #3a5a8a;
+    transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .auth-left,
+    .auth-right {
+        padding: 3rem 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .auth-container {
+        padding: 2rem 0;
+    }
+    
+    .auth-card {
+        margin: 0 1rem;
+    }
+    
+    .social-login {
+        flex-direction: column;
+    }
+    
+    .auth-left h2 {
+        font-size: 2rem;
+    }
+    
+    .auth-header h1 {
+        font-size: 1.8rem;
+    }
+}
