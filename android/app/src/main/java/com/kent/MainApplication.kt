@@ -1,4 +1,4 @@
-package com.samaco
+package com.kent
 
 import android.app.Application
 import com.facebook.react.PackageList

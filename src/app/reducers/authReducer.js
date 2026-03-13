@@ -1,5 +1,3 @@
-import { register } from "react-native/types_generated/Libraries/Renderer/shims/ReactNativeViewConfigRegistry";
-
 // Action Types
 export const LOGIN_REQUEST = 'LOGIN_REQUEST';
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';

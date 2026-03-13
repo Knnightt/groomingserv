@@ -2,18 +2,18 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { ROUTES } from '../utils';
 
 // screens
-import HomeScreen from '../screens/HomeScreen';
+import Dashboard from '../screens/Dashboard';
 import ProfileScreen from '../screens/ProfileScreen';
 
 const Stack = createStackNavigator();
 
 const MainNavigation = () => {
   return (
-    <Stack.Navigator initialRouteName={ROUTES.HOME}>
+    <Stack.Navigator initialRouteName={ROUTES.DASHBOARD}>
       <Stack.Screen 
-        name={ROUTES.HOME} 
-        component={HomeScreen} 
-        options={{ headerShown: true, title: 'Home' }}
+        name={ROUTES.DASHBOARD} 
+        component={Dashboard} 
+        options={{ headerShown: true, title: 'Dashboard' }}
       />
       <Stack.Screen 
         name={ROUTES.PROFILE} 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Alert, Text, TouchableOpacity, View, ActivityIndicator } from 'react-native';
+import { Alert, Text, TouchableOpacity, View, ActivityIndicator, ImageBackground, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -29,12 +29,13 @@ const Login = () => {
     }
   }, [error]);
 
-  // Log when authenticated
+  // Navigate to dashboard when authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      console.log('[SUCCESS] User authenticated successfully');
+      console.log('[SUCCESS] User authenticated successfully, redirecting');
+      navigation.replace(ROUTES.DASHBOARD);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, navigation]);
 
   const handleLogin = () => {
     // Log button press with final values
@@ -65,81 +66,117 @@ const Login = () => {
   };
 
   return (
-    <View
-      style={{
-        flex: 1,
-        padding: 20,
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
+    <ImageBackground
+      source={{ uri: 'https://i.imgur.com/4NJl8sD.jpg' }}
+      style={styles.background}
     >
-      <View style={{ width: '100%' }}>
+      <View style={styles.overlay} />
+      <View style={styles.formWrapper}>
+        <Text style={styles.title}>Welcome back</Text>
+        <Text style={styles.subtitle}>Enter your details to access your account</Text>
+
         <CustomTextInput
           label={'Email Address'}
           placeholder={'Enter Email Address'}
           value={emailAdd}
-          onChangeText={setEmailAdd}  // Back to original
-          containerStyle={{
-            padding: 5,
-          }}
-          textStyle={{
-            borderRadius: 10,
-            color: 'black',
-            marginLeft: 10,
-            fontWeight: 'bold',
-          }}
+          onChangeText={setEmailAdd}
+          containerStyle={styles.inputContainer}
+          textStyle={styles.inputText}
         />
         <CustomTextInput
           label={'Password'}
           placeholder={'Enter Password'}
           value={password}
-          onChangeText={setPassword}  // Back to original
+          onChangeText={setPassword}
           secureTextEntry={true}
-          containerStyle={{
-            padding: 5,
-          }}
-          textStyle={{
-            borderRadius: 10,
-            color: 'black',
-            marginLeft: 10,
-          }}
+          containerStyle={styles.inputContainer}
+          textStyle={styles.inputText}
         />
-      </View>
 
-      <CustomButton
-        label={isLoading ? "LOGGING IN..." : "LOGIN"}
-        containerStyle={{
-          backgroundColor: isLoading ? 'gray' : 'blue',
-          borderRadius: 10,
-          marginVertical: 20,
-          width: '80%',
-        }}
-        textStyle={{
-          color: 'white',
-          fontWeight: 'bold',
-        }}
-        onPress={handleLogin}
-        disabled={isLoading}
-      >
-        {isLoading && <ActivityIndicator color="white" />}
-      </CustomButton>
+        <CustomButton
+          label={isLoading ? "LOGGING IN..." : "Sign In"}
+          containerStyle={[styles.button, isLoading && { backgroundColor: 'gray' }]}
+          textStyle={styles.buttonText}
+          onPress={handleLogin}
+          disabled={isLoading}
+        >
+          {isLoading && <ActivityIndicator color="white" />}
+        </CustomButton>
 
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <Text>Create an account?</Text>
-        <TouchableOpacity onPress={handleRegisterPress}>
-          <Text style={{ color: 'red', marginLeft: 10, fontWeight: 'bold' }}>
-            Register
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.footerLinks}>
+          <Text style={styles.footerText}>Don't have an account?</Text>
+          <TouchableOpacity onPress={handleRegisterPress}>
+            <Text style={styles.linkText}>Sign up</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </ImageBackground>
   );
+};
+
+
+const styles = {
+  background: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  formWrapper: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#fff',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#ddd',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  inputContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 15,
+  },
+  inputText: {
+    color: '#000',
+  },
+  button: {
+    backgroundColor: '#007AFF',
+    borderRadius: 8,
+    paddingVertical: 12,
+    marginTop: 10,
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  footerLinks: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 20,
+  },
+  footerText: {
+    color: '#fff',
+    marginRight: 5,
+  },
+  linkText: {
+    color: '#ffcc00',
+    textDecorationLine: 'underline',
+  },
 };
 
 export default Login;

@@ -11,7 +11,7 @@ import {
   GET_USER_FAILURE,
   LOGOUT 
 } from '../reducers/authReducer';
-import { authLogin, authMe, authLogout } from '../api/auth';
+import { authLogin, authRegister, authMe, authLogout } from '../api/auth';
 
 // Login Saga
 function* loginSaga(action) {
