@@ -27,8 +27,17 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        api_login:
+            pattern: ^/api/login$
+            security: false
+        api:
+            pattern: ^/api
+            stateless: true
+            provider: app_user_provider
+            jwt: ~
         main:
             lazy: true
+            pattern: ^/
             provider: app_user_provider
             custom_authenticator: App\Security\LoginFormAuthenticator
             logout:
@@ -39,11 +48,6 @@ security:
                 lifetime: 604800
                 path: /
                 always_remember_me: false
-        api:
-            pattern: ^/api
-            stateless: true
-            provider: app_user_provider
-            jwt: ~
 
     # Easy way to control access for large sections of your site
     # Note: Only the first* access control that matches will be used
